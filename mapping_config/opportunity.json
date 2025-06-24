@@ -1,0 +1,22 @@
+{
+    "board_id": "9378000036",
+    "salesforce_id_column_id": "text_mkry20c9",
+    "salesforce_select_fields": "Name, Id, AccountId, RecordTypeId, Description, StageName, Amount, ExpectedRevenue, CloseDate, Type, CreatedDate, LastModifiedDate, LastStageChangeDate, ContactId, npe01__Number_of_Payments__c",
+    "salesforce_object": "Opportunity",
+    "salesforce_condition": "RecordTypeId = '0123p000000EILEAA4'",
+    "field_mapping": {
+        "text_mkry20c9": "Id",
+        "text_mkryman1": "AccountId",
+        "text_mkrytt1n": "RecordTypeId",
+        "text_mkrypv44": "Description",
+        "text_mkryd34m": "StageName",
+        "text_mkryrrnt": "Amount",
+        "text_mkryrhqz": "ExpectedRevenue",
+        "text_mkryhgwb": "CloseDate",
+        "text_mkrykt8c": "CreatedDate",
+        "text_mkryq4c8": "LastModifiedDate",
+        "text_mkry45pm": "LastStageChangeDate",
+        "text_mkrya4jj": "ContactId",
+        "text_mkryzngt": "npe01__Number_of_Payments__c"
+    }
+}
