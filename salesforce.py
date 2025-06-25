@@ -42,9 +42,9 @@ def fetch_salesforce_records(instance_url, access_token, object_name, select_fie
     records = []
     query_url = f"{instance_url}/services/data/v58.0/query"
     headers = {"Authorization": f"Bearer {access_token}"}
-    
+
     response = requests.get(query_url, headers=headers, params=params)
-    
+
     if response.status_code != 200:
         try:
             error_json = response.json()
@@ -57,11 +57,11 @@ def fetch_salesforce_records(instance_url, access_token, object_name, select_fie
 
     result = response.json()
     records.extend(result['records'])
-    
+ 
     while not result.get('done', True): #만약 result.get('done', True)가 False를 반환하면, not False가 되므로 while True가 되어 걔속 반복됨. 
         next_url = f"{instance_url}{result['nextRecordsUrl']}" #그런데, 만약 result.get('done',True)가 True를 반환하면, not True가 되므로 while False, 즉 반복문이 종료됨
         response = requests.get(next_url, headers=headers)
         result = response.json()
         records.extend(result['records'])
-    
+
     return records

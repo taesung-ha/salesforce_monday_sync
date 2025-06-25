@@ -30,13 +30,10 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
             json={"query": query, "variables": variables}
         )
         
-        print("Rate Limit Remaining:", response.headers.get('X-RateLimit-Remaining', 'No Rate Limit Info'))
-        print("Total Rate Limit:", response.headers.get("x-ratelimit-limit"))
         
         result = response.json()
         
 
-        
         if "errors" in result:
             print("❌ GraphQL error:", json.dumps(result["errors"], indent=2))
             break
