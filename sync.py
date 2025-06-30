@@ -80,3 +80,4 @@ def sync_salesforce_to_monday(board_config_path):
     print(f"Successfully synced {len(records)} records to Monday.com.")
 
     save_sync_time()
+    print("📝 Sync time updated.")
