@@ -20,10 +20,13 @@ def main():
             # Account board는 별도 처리
             
     print("\n📦 Syncing Account board...")
+    
     try:
         sync_account_records()
         print("✅ Successfully synced Account board.")
+        
     except Exception as e:
         print(f"❌ Error syncing Account board: {e}")
+
 if __name__ == "__main__":
     main()
