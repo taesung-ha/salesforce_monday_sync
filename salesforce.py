@@ -21,15 +21,14 @@ def get_salesforce_access_token(client_id, client_secret, username, password):
     
     return access_token, instance_url
 
-def fetch_salesforce_records(instance_url, access_token, object_name, select_fields, conditions = None, created_date_filter=None, from_datetime=None):
+def fetch_salesforce_records(instance_url, access_token, object_name, select_fields, conditions = None, from_datetime=None):
     
     query = f"SELECT {select_fields} FROM {object_name}"
 
     where_clauses = []
     if conditions:
         where_clauses.append(conditions)
-    if created_date_filter:
-        where_clauses.append(f"CreatedDate >= {created_date_filter}")
+
     if from_datetime:
         where_clauses.append(f"LastModifiedDate >= {from_datetime}")
 

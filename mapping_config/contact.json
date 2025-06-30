@@ -4,7 +4,7 @@
     "salesforce_select_fields": "Name, Id, LastName, FirstName, AccountId, RecordTypeId, CreatedDate, LastModifiedDate, Title, Description, LastActivityDate, npe01__Organization_Type__c, Birthdate__c, Veteran_Status__c, Disability_Status__c, npsp__Primary_Affiliation__c, Referring_Organization__c, Birthdate, MailingStreet, MailingCity, MailingState, MailingPostalCode, MailingCountry, MailingStateCode, Phone, Email, npe01__Type_of_Account__c, npe01__WorkPhone__c, npe01__Work_Address__c, MobilePhone, LinkedIn__c",
     "salesforce_object": "Contact",
     "salesforce_condition": "Id in (SELECT ContactId FROM Opportunity WHERE RecordTypeId = '0123p000000EILEAA4')",
-    "salesforce_condition2": "Id in (SELECT ConvertedContactId FROM Lead WHERE Role__c ='Partner' AND CreatedDate >= 2024-07-01T00:00:00Z)",
+    "salesforce_condition2": "Id in (SELECT ConvertedContactId FROM Lead WHERE Role__c ='Partner' AND CreatedDate >= 2024-07-01T00:00:00Z AND ConvertedContactId != null)",
     "field_mapping": {
         "text_mks6ner3": "Id",
         "text_mks67we5": "LastName",

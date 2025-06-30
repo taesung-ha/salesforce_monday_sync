@@ -22,8 +22,7 @@ def sync_salesforce_to_monday(board_config_path):
     salesforce_object = config["salesforce_object"]
     salesforce_condition = config.get("salesforce_condition", None)
     salesforce_condition2 = config.get("salesforce_condition2", None)
-    salesforce_created_date_filter = config.get("salesforce_created_date_filter", None)
-    field_mapping = config["field_mapping"]    
+    field_mapping = config["field_mapping"]
 
     if not all([SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD, MONDAY_TOKEN, monday_board_id]):
         print("Missing configuration for Salesforce or Monday.com.")
@@ -41,20 +40,35 @@ def sync_salesforce_to_monday(board_config_path):
 
     last_sync = get_last_sync_time()
 
-    records = fetch_salesforce_records(instance_url, access_token, salesforce_object, salesforce_select_fields, salesforce_condition, salesforce_created_date_filter, last_sync)
+    records = fetch_salesforce_records(
+        instance_url = instance_url, 
+        access_token = access_token, 
+        object_name = salesforce_object, 
+        select_fields = salesforce_select_fields, 
+        conditions = salesforce_condition,
+        from_datetime = last_sync
+    )
     if not records:
         print("No new records found in Salesforce.")
         return
     
     if salesforce_condition2: #when salesforce_condition2 is not None, it means that the user wants to fetch records with two conditions. they are combined with OR operator
-        records2 = fetch_salesforce_records(instance_url, access_token, salesforce_object, salesforce_select_fields, salesforce_condition2, salesforce_created_date_filter)
+        records2 = fetch_salesforce_records(
+            instance_url = instance_url, 
+            access_token = access_token, 
+            object_name = salesforce_object, 
+            select_fields = salesforce_select_fields, 
+            conditions = salesforce_condition2,
+            from_datetime = last_sync
+        )
         records.extend(records2)
         unique_records = {}
         
         for record in records:
             unique_records[record['Id']] = record
-            
+        
         records = list(unique_records.values())
+        
 
     monday_items = get_monday_items(monday_board_id, MONDAY_TOKEN, salesforce_column_id)
     if not monday_items:

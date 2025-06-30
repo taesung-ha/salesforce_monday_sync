@@ -1,10 +1,9 @@
 {
     "board_id": "9378000505",
     "salesforce_id_column_id": "text_mkryhch5",
-    "salesforce_select_fields": "Id, LastName, Website, FirstName, ConvertedAccountId, RecordTypeId, ConvertedOpportunityId, CreatedDate, LastModifiedDate, Company, Street, City, State, PostalCode, Country, StateCode, CountryCode, Address, Phone, MobilePhone, Email, Description, Status, OwnerId, IsConverted, CreatedById, LastModifiedById, Role__c, Record_Type_ID_Text__c, LeadSource",
+    "salesforce_select_fields": "Id, LastName, Website, FirstName, ConvertedAccountId, ConvertedContactId, RecordTypeId, ConvertedOpportunityId, CreatedDate, LastModifiedDate, Company, Street, City, State, PostalCode, Country, StateCode, CountryCode, Address, Phone, MobilePhone, Email, Description, Status, OwnerId, IsConverted, CreatedById, LastModifiedById, Role__c, Record_Type_ID_Text__c, LeadSource",
     "salesforce_object": "Lead",
-    "salesforce_condition": "Role__c = 'Partner'",
-    "created_date_filter": "2024-07-01T00:00:00Z",
+    "salesforce_condition": "Role__c = 'Partner' AND CreatedDate >= 2024-07-01T00:00:00Z",
     "field_mapping": {
         "text_mkryhch5": "Id",
         "text_mkry1xy1": "LastName",
@@ -12,7 +11,8 @@
         "text_mks821t": "Website",
         "text_mkryp43z": "ConvertedAccountId",
         "text_mkry427s": "RecordTypeId",
-        "text_mkry53df": "ConvertedOpportunityId",
+        "text_mkry53df": "ConvertedContactId",
+        "text_mkry581q": "ConvertedOpportunityId",
         "text_mkryzhzt": "CreatedDate",
         "text_mkryr3pj": "LastModifiedDate",
         "text_mkrykrc2": "Company",
