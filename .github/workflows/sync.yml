@@ -1,5 +1,8 @@
 name: Salesforce to Monday Sync
 
+permissions:
+  contents: write
+
 on:
   schedule:
     - cron: '0 * * * *'  # 매 1시간마다 실행 (UTC 기준)

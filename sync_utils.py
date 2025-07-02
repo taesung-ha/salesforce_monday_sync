@@ -26,3 +26,9 @@ def save_sync_time():
         
     except Exception as e:
         print(f'Error saving sync time: {e}')
+        
+    os.system('git config --global user.name "github-actions[bot]"')
+    os.system('git config --global user.email "github-actions[bot]@users.noreply.github.com"')
+    os.system(f'git add {sync_file}')
+    os.system('git commit -m "🔄 update last_sync_time" || echo "No changes to commit"')
+    os.system('git push || echo "Push failed (possibly no write permission)"')

@@ -45,7 +45,6 @@ def connect_all_boards():
 
 def main():
     sync_boards()
-
-
+    # Connect all boards은 아직 자동화 X. 최적화 해줘야 함
 if __name__ == "__main__":
     main()
