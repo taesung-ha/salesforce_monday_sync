@@ -31,10 +31,7 @@
         "text_mkryqghj": "Status",
         "text_mkryzjsj": "OwnerId",
         "text_mkryxqtf": "IsConverted",
-        "text_mkryga4w": "CreatedById",
-        "text_mkryed39": "LastModifiedById",
         "text_mkryf4cd": "Role__c",
-        "text_mkrykc46": "Record_Type_ID_Text__c",
         "text_mkrycwgc": "LeadSource"
     }
 }

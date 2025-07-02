@@ -13,7 +13,7 @@ def get_salesforce_access_token(client_id, client_secret, username, password):
     response = requests.post(url, data=data)
     if response.status_code != 200:
         raise Exception(f"Error getting access token: {response.text}")
-    
+
     res = response.json()
 
     access_token = res['access_token']

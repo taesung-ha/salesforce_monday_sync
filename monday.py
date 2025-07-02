@@ -23,16 +23,17 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
             }
         }
         '''
+
         variables = {"boardId": monday_board_id, "cursor": cursor}
         response = requests.post(
-            "https://api.monday.com/v2",
+            MONDAY_API_URL,
             headers={"Authorization": monday_token},
             json={"query": query, "variables": variables}
         )
-        
-        
+
+
         result = response.json()
-        
+
 
         if "errors" in result:
             print("❌ GraphQL error:", json.dumps(result["errors"], indent=2))
@@ -62,7 +63,7 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
         return
 
     item_name = record.get('Name') or f"{record.get('FirstName', '')} {record.get('LastName', '')}".strip()
-    
+
     column_values = {
         column_id: str(record.get(sf_field, ""))
         for column_id, sf_field in field_mapping.items()
@@ -84,7 +85,7 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
             "columnValues": json.dumps(cleaned)
         }
         r = requests.post(
-            "https://api.monday.com/v2",
+            MONDAY_API_URL,
             headers={"Authorization": monday_token},
             json={"query": query, "variables": variables}
         )
@@ -126,7 +127,7 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
                 "columnValues": json.dumps(updated)
             }
             r = requests.post(
-                "https://api.monday.com/v2",
+                MONDAY_API_URL,
                 headers={"Authorization": monday_token},
                 json={"query": query, "variables": variables}
             )
@@ -142,3 +143,4 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
                 print(f"🔁 Updated: {item_name}")
         else:
             print(f"⏩ Skipped (no change): {item_name}")
+

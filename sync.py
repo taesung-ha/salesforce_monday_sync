@@ -12,10 +12,11 @@ from salesforce import get_salesforce_access_token, fetch_salesforce_records
 from monday import get_monday_items, create_or_update_monday_item
 from sync_utils import get_last_sync_time, save_sync_time
 
+
 def sync_salesforce_to_monday(board_config_path):
     with open(board_config_path) as f:
         config = json.load(f)
-    
+
     monday_board_id = config["board_id"]
     salesforce_column_id = config["salesforce_id_column_id"]
     salesforce_select_fields = config.get("salesforce_select_fields", "*")
@@ -48,10 +49,11 @@ def sync_salesforce_to_monday(board_config_path):
         conditions = salesforce_condition,
         from_datetime = last_sync
     )
+
     if not records:
         print("No new records found in Salesforce.")
         return
-    
+
     if salesforce_condition2: #when salesforce_condition2 is not None, it means that the user wants to fetch records with two conditions. they are combined with OR operator
         records2 = fetch_salesforce_records(
             instance_url = instance_url, 
@@ -61,14 +63,14 @@ def sync_salesforce_to_monday(board_config_path):
             conditions = salesforce_condition2,
             from_datetime = last_sync
         )
+
         records.extend(records2)
         unique_records = {}
-        
+
         for record in records:
             unique_records[record['Id']] = record
-        
+
         records = list(unique_records.values())
-        
 
     monday_items = get_monday_items(monday_board_id, MONDAY_TOKEN, salesforce_column_id)
     if not monday_items:

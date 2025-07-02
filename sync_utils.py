@@ -26,4 +26,3 @@ def save_sync_time():
         
     except Exception as e:
         print(f'Error saving sync time: {e}')
-    

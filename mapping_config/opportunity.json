@@ -6,6 +6,7 @@
     "salesforce_condition": "RecordTypeId = '0123p000000EILEAA4'",
     "field_mapping": {
         "text_mkry20c9": "Id",
+        "text_mkryte5y": "Type",
         "text_mkryman1": "AccountId",
         "text_mkrytt1n": "RecordTypeId",
         "text_mkrypv44": "Description",
