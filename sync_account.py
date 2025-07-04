@@ -92,6 +92,7 @@ def sync_account_records():
 
     # 🔁 Get last sync time
     last_sync = get_last_sync_time()
+    last_sync = "2025-06-04T07:28:15.072942+00:00"
     print(f"⏱️ Last sync time: {last_sync}")
 
     # 🧾 Filter by modified date

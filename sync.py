@@ -47,7 +47,7 @@ def sync_salesforce_to_monday(board_config_path):
         object_name = salesforce_object, 
         select_fields = salesforce_select_fields, 
         conditions = salesforce_condition,
-        from_datetime = last_sync
+        from_datetime = None
     )
 
     if not records:
@@ -61,7 +61,7 @@ def sync_salesforce_to_monday(board_config_path):
             object_name = salesforce_object, 
             select_fields = salesforce_select_fields, 
             conditions = salesforce_condition2,
-            from_datetime = last_sync
+            from_datetime = None
         )
 
         records.extend(records2)

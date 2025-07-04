@@ -28,6 +28,7 @@ def save_sync_time():
         print(f'Error saving sync time: {e}')
         return
     
+    '''
     # Git user 설정 (GitHub Actions용)
     os.system('git config --global user.name "github-actions[bot]"')
     os.system('git config --global user.email "github-actions[bot]@users.noreply.github.com"')
@@ -46,3 +47,4 @@ def save_sync_time():
     # 디버깅용 git 상태 확인
     os.system('git status')
     os.system('git log -1 --oneline')
+    '''
