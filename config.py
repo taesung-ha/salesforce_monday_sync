@@ -3,14 +3,22 @@
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+try:
+    import streamlit as st
+    SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
+    SF_CLIENT_SECRET = st.secrets["SF_CLIENT_SECRET"]
+    SF_USERNAME = st.secrets["SF_USERNAME"]
+    SF_PASSWORD = st.secrets["SF_PASSWORD"]
+    MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
+except ModuleNotFoundError:
+    from dotenv import load_dotenv
+    load_dotenv()
+    SF_CLIENT_ID = os.getenv("SF_CLIENT_ID")
+    SF_CLIENT_SECRET = os.getenv("SF_CLIENT_SECRET")
+    SF_USERNAME = os.getenv("SF_USERNAME")
+    SF_PASSWORD = os.getenv("SF_PASSWORD")
+    MONDAY_TOKEN = os.getenv("MONDAY_TOKEN")
 
-SF_CLIENT_ID = os.getenv("SF_CLIENT_ID")
-SF_CLIENT_SECRET = os.getenv("SF_CLIENT_SECRET")
-SF_USERNAME = os.getenv("SF_USERNAME")
-SF_PASSWORD = os.getenv("SF_PASSWORD")
-
-MONDAY_TOKEN = os.getenv("MONDAY_TOKEN")
 API_URL = "https://api.monday.com/v2"
 HEADERS = {
     "Authorization": MONDAY_TOKEN,
