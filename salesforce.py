@@ -1,4 +1,4 @@
-import requests
+import requests, json
 
 def get_salesforce_access_token(client_id, client_secret, username, password):
     url = "https://login.salesforce.com/services/oauth2/token"

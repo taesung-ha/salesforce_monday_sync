@@ -6,18 +6,18 @@
     "salesforce_condition": "RecordTypeId = '0123p000000EILEAA4'",
     "field_mapping": {
         "text_mkry20c9": "Id",
-        "text_mkryte5y": "Type",
+        "dropdown_mksjwx1c": "Type",
         "text_mkryman1": "AccountId",
         "text_mkrytt1n": "RecordTypeId",
-        "text_mkrypv44": "Description",
-        "text_mkryd34m": "StageName",
-        "text_mkryrrnt": "Amount",
-        "text_mkryrhqz": "ExpectedRevenue",
+        "long_text_mksjyg4z": "Description",
+        "color_mksj6ap4": "StageName",
+        "numeric_mksjdntv": "Amount",
+        "numeric_mksjaf5e": "ExpectedRevenue",
         "text_mkryhgwb": "CloseDate",
         "text_mkrykt8c": "CreatedDate",
         "text_mkryq4c8": "LastModifiedDate",
         "text_mkry45pm": "LastStageChangeDate",
         "text_mkrya4jj": "ContactId",
-        "text_mkryzngt": "npe01__Number_of_Payments__c"
+        "numeric_mksjqz3v": "npe01__Number_of_Payments__c"
     }
 }

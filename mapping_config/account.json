@@ -7,8 +7,7 @@
     "salesforce_condition2": "Id in (SELECT ConvertedAccountId FROM Lead WHERE Role__c ='Partner' AND CreatedDate >= 2024-07-01T00:00:00Z)",
     "field_mapping": {
         "text_mkrykpx4": "Id",
-        "text_mkrybve0": "Type",
-        "text_mkryjsg8": "RecordTypeId",
+        "dropdown_mksjv0b6": "Type",
         "text_mkrycwt2": "BillingStreet",
         "text_mkry84sc": "BillingCity",
         "text_mkryw8sk": "BillingState",
@@ -17,18 +16,18 @@
         "text_mkrypgwa": "BillingStateCode",
         "text_mkryh3k": "Phone",
         "text_mkrynkny": "Website",
-        "text_mkryhesa": "Industry",
-        "text_mkryysg6": "Description",
-        "text_mkryh1ek": "OwnerId",
+        "dropdown_mksjd8b8": "Industry",
+        "long_text_mksjv61h": "Description",
         "text_mkrysg57": "CreatedDate",
         "text_mkryg3c0": "LastModifiedDate",
         "text_mkry3shz": "npe01__SYSTEM_AccountType__c",
         "text_mkrywebb": "Capacity_Building_Needs__c",
-        "text_mkryjby6": "npe01__LifetimeDonationHistory_Amount__c",
-        "text_mkryyxgy": "npo02__AverageAmount__c",
-        "text_mkryzc1w": "npo02__Best_Gift_Year_Total__c",
-        "text_mkryh1mm": "npo02__LargestAmount__c",
-        "text_mkryrkwn": "npo02__SmallestAmount__c",
-        "text_mkryzgqe": "npo02__TotalOppAmount__c"
+        "numeric_mksjw0yx": "npe01__LifetimeDonationHistory_Amount__c",
+        "numeric_mksjwbt1": "npe01__LifetimeDonationHistory_Number__c",
+        "numeric_mksj8p6p": "npo02__AverageAmount__c",
+        "numeric_mksjcb1n": "npo02__Best_Gift_Year_Total__c",
+        "numeric_mksj7agk": "npo02__LargestAmount__c",
+        "numeric_mksjj64m": "npo02__SmallestAmount__c",
+        "numeric_mksjaza0": "npo02__TotalOppAmount__c"
     }
 }

@@ -1,3 +1,4 @@
+#%%
 import os
 from sync import sync_salesforce_to_monday
 from sync_account import sync_account_records
@@ -8,7 +9,7 @@ def sync_boards():
     board_configs = [
         "mapping_config/contact.json",
         "mapping_config/lead.json",
-        "mapping_config/opportunity.json",
+        "mapping_config/opportunity.json"
     ]
 
     for config_path in board_configs:

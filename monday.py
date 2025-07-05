@@ -7,8 +7,8 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
     cursor = None
 
     while True:
-        query = '''
-            query ($boardId: ID!, $cursor: String) {
+        query = """
+        query ($boardId: ID!, $cursor: String) {
             boards(ids: [$boardId]) {
                 items_page(limit: 100, cursor: $cursor) {
                     cursor
@@ -17,12 +17,14 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
                         column_values {
                             id
                             text
+                            value
+                            type
                         }
                     }
                 }
             }
         }
-        '''
+        """
 
         variables = {"boardId": monday_board_id, "cursor": cursor}
         response = requests.post(
@@ -31,31 +33,100 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
             json={"query": query, "variables": variables}
         )
 
-
         result = response.json()
-
-
         if "errors" in result:
             print("❌ GraphQL error:", json.dumps(result["errors"], indent=2))
             break
 
         items_data = result['data']['boards'][0]['items_page']
         items = items_data['items']
-        for item in items:
-            cols = {cv['id']: cv.get('text', '') for cv in item['column_values']}
-            lead_id = cols.get(salesforce_id_column_id) #Salesforce ID column ID in monday.com
-            if lead_id:
-                monday_items[lead_id] = {
-                    "item_id": item['id'],
-                    "column_values": cols
-                }
 
-        # 다음 페이지로 이동
+        for item in items:
+            column_dict = {}
+            for cv in item['column_values']:
+                col_id = cv['id']
+                col_type = cv['type']
+                text = cv.get('text', '')
+                value = cv.get('value')
+                parsed_value = None
+                
+                if col_type == 'status' and value:
+                    # 예: {"index": 0, "post_id": null, "changed_at": "..."}
+                    value = json.loads(value)
+                    parsed_value = {"label": text, "index": value.get("index")}
+
+                elif col_type == 'date' and value:
+                    value = json.loads(value)
+                    parsed_value = {"date": value.get("date")}
+
+                elif col_type == 'people' and value:
+                    value = json.loads(value)
+                    parsed_value = {"personsAndTeams": value.get("personsAndTeams", [])}
+
+                elif col_type == 'numbers' and text:
+                    try:
+                        parsed_value = float(text)
+                    except:
+                        parsed_value = None
+
+                elif col_type == 'long-text' and value:
+                    value = json.loads(value)
+                    parsed_value = value.get("text", "")
+
+                elif col_type == 'dropdown' and value:
+                    # 예: {"ids":[...],"labels":["Option A", "Option B"]}
+                    value = json.loads(value)
+                    parsed_value = {"labels": value.get("labels", [])}
+
+                else:
+                    parsed_value = text  # fallback: use plain text
+
+                column_dict[col_id] = {
+                    "type": col_type,
+                    "value": parsed_value
+                }
+    
+            salesforce_entry = column_dict.get(salesforce_id_column_id)
+            if salesforce_entry:
+                salesforce_id = salesforce_entry.get("value")
+                if salesforce_id:
+                    monday_items[salesforce_id] = {
+                        "item_id": item['id'],
+                        "column_values": column_dict
+                    }
+
         cursor = items_data.get('cursor')
         if not cursor:
             break
 
     return monday_items
+
+def format_value_for_column(value, col_type):
+    if col_type == 'status':
+        return {"label": value}
+    elif col_type == 'date':
+        return {"date": value}
+    elif col_type == 'people':
+        try:
+            return {"personsAndTeams": [{"id": int(value), "kind": "person"}]}
+        except:
+            return {}
+    elif col_type == 'dropdown':
+        if isinstance(value, list):
+            return {"labels": value}
+        elif isinstance(value, str):
+            return {"labels": [value]}
+        else:
+            return {}
+    elif col_type == 'long-text':
+        return {"text": value}
+    elif col_type == 'numbers':
+        try:
+            return float(value)
+        except:
+            return 0
+    else:
+        return str(value)  # fallback: treat as text
 
 def create_or_update_monday_item(record, monday_items, monday_board_id, monday_token, field_mapping):
     salesforce_id = record.get("Id")
@@ -64,83 +135,71 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
 
     item_name = record.get('Name') or f"{record.get('FirstName', '')} {record.get('LastName', '')}".strip()
 
-    column_values = {
-        column_id: str(record.get(sf_field, ""))
-        for column_id, sf_field in field_mapping.items()
-    }
-
-    cleaned = {k: str(v) if v else "" for k, v in column_values.items()}
-    # create new item
+    # Step 1: 변환 대상 만들기
+    column_values = {}
+    for monday_col_id, sf_field in field_mapping.items():
+        value = record.get(sf_field, "")
+        # 기존 monday item이 있다면 type 재활용
+        if salesforce_id in monday_items:
+            col_type = monday_items[salesforce_id]["column_values"].get(monday_col_id, {}).get("type", "text")
+        else:
+            col_type = "text"
+        column_values[monday_col_id] = format_value_for_column(value, col_type)
+        #column_values = {monday_col_id: {"label": value}}
+        #GraphQL 형식 맞춰서 Salesforce로부터 받은 data를 monday.com의 컬럼 type에 맞게 Monday.com으로 밀어넣으려고. 
+        
+    # Step 2: Create
     if salesforce_id not in monday_items:
         query = '''
         mutation ($boardId: ID!, $itemName: String!, $columnValues: JSON!) {
-                create_item (board_id: $boardId, item_name: $itemName, column_values: $columnValues) {
-                    id
+            create_item (board_id: $boardId, item_name: $itemName, column_values: $columnValues) {
+                id
             }
         }
         '''
         variables = {
             "boardId": monday_board_id,
             "itemName": item_name,
-            "columnValues": json.dumps(cleaned)
+            "columnValues": json.dumps(column_values)
         }
-        r = requests.post(
-            MONDAY_API_URL,
-            headers={"Authorization": monday_token},
-            json={"query": query, "variables": variables}
-        )
 
-        try:
-            response = r.json()
-            if "errors" in response:
-                print(f"❌ Failed to create item: {item_name}\nReason: {response['errors'][0]['message']}")
-
-            else:
-                print(f"✅ Created: {item_name}")
-                print(f"📎 Created Item ID: {response['data']['create_item']['id']}")
-
-        except ValueError:
-            print(f"❌ Json parsing failure (abnormal response):")
-            print(r.text)
-        except Exception as e:
-            print(f"❌ Exception occurred: {e}")
-    
-    else: 
-        # update existing item
-        current = monday_items[salesforce_id]['column_values']
-        updated = {}
-        for k in cleaned:
-            if cleaned[k] != current.get(k, ""):
-                updated[k] = cleaned[k]
-        if updated:
-            updated = {k: str(v) for k, v in updated.items() if v}
-            query = '''
-            mutation ($itemId: ID!, $boardId: ID!, $columnValues: JSON!) {
-                change_multiple_column_values(item_id: $itemId, board_id: $boardId, column_values: $columnValues) {
-                    id
-                }
-            }
-            '''
-            variables = {
-                "itemId": str(monday_items[salesforce_id]['item_id']),
-                "boardId": str(monday_board_id),
-                "columnValues": json.dumps(updated)
-            }
-            r = requests.post(
-                MONDAY_API_URL,
-                headers={"Authorization": monday_token},
-                json={"query": query, "variables": variables}
-            )
-            if 'errors' in r.json():
-                print("❌ GraphQL error occurred:")
-                for err in r.json()['errors']:
-                    print(f"  - {err['message']}")
-                    if "locations" in err:
-                        print(f"  location: {err['locations']}")
-                    if "extensions" in err:
-                        print(f"  code: {err['extensions'].get('code')}")
-            else:
-                print(f"🔁 Updated: {item_name}")
+        r = requests.post(MONDAY_API_URL, headers={"Authorization": monday_token}, json={"query": query, "variables": variables})
+        response = r.json()
+        if "errors" in response:
+            print(f"❌ Failed to create item: {item_name}")
+            print(response["errors"])
         else:
-            print(f"⏩ Skipped (no change): {item_name}")
+            print(f"✅ Created: {item_name}")
+        return
+
+    # Step 3: Update
+    current = monday_items[salesforce_id]['column_values']
+    updated = {}
+    for k, v in column_values.items(): #column_values는 salesforce에서 가져온 값이고, current는 monday_items에서 가져온 값임
+        current_val = current.get(k, {}).get("value")
+        if v != current_val:
+            updated[k] = v
+
+    if updated:
+        query = '''
+        mutation ($itemId: ID!, $boardId: ID!, $columnValues: JSON!) {
+            change_multiple_column_values(item_id: $itemId, board_id: $boardId, column_values: $columnValues) {
+                id
+            }
+        }
+        '''
+        variables = {
+            "itemId": monday_items[salesforce_id]['item_id'],
+            "boardId": monday_board_id,
+            "columnValues": json.dumps(updated)
+        }
+        r = requests.post(MONDAY_API_URL, headers={"Authorization": monday_token}, json={"query": query, "variables": variables})
+        response = r.json()
+        if "errors" in response:
+            print(f"❌ Update error for {item_name}")
+            print(response["errors"])
+        else:
+            print(f"🔁 Updated: {item_name}")
+    else:
+        print(f"⏩ Skipped (no change): {item_name}")
 
