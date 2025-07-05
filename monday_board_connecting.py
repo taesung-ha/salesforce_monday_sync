@@ -110,9 +110,9 @@ def connect_items(source_board_id, target_board_id, source_key_col_id, target_ke
 
         res = requests.post(API_URL, headers=HEADERS, json={"query": mutation, "variables": variables})
         if "errors" in res.json():
-            print(f"❌ 연결 실패: Source {source_item_id} → Target {target_item_ids}")
+            print(f"❌ 연결 실패: Source {source_item_id} → Target {target_item_ids}", flush=True)
             print(res.text)
         else:
-            print(f"✅ 연결 완료: Source {source_item_id} → Target {target_item_ids}")
+            print(f"✅ 연결 완료: Source {source_item_id} → Target {target_item_ids}", flush=True)
 
     print("🎉 모든 연결 시도 완료.")

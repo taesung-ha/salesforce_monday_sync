@@ -128,11 +128,11 @@ def sync_account_records():
     for record in records:
         create_or_update_monday_item(record, monday_items, monday_board_id, MONDAY_TOKEN, field_mapping)
 
-    print(f"✅ Synced {len(records)} Account records to Monday.com.")
+    print(f"✅ Synced {len(records)} Account records to Monday.com.", flush=True)
 
     # 🕒 Save sync time
     save_sync_time()
-    print("📝 Sync time updated.")
+    print("📝 Sync time updated.", flush= True)
 
 
 if __name__ == "__main__":
