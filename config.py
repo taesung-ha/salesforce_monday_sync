@@ -1,7 +1,5 @@
 # config.py
 #%%
-import os
-
 try:
     import streamlit as st
     SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
@@ -10,8 +8,10 @@ try:
     SF_PASSWORD = st.secrets["SF_PASSWORD"]
     MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
 except ModuleNotFoundError:
+    import os
     from dotenv import load_dotenv
     load_dotenv()
+
     SF_CLIENT_ID = os.getenv("SF_CLIENT_ID")
     SF_CLIENT_SECRET = os.getenv("SF_CLIENT_SECRET")
     SF_USERNAME = os.getenv("SF_USERNAME")
