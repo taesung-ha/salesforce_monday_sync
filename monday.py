@@ -1,8 +1,9 @@
-import requests, json
+import json
 
 MONDAY_API_URL = "https://api.monday.com/v2"
 
 def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
+    import requests
     monday_items = {}
     cursor = None
 
@@ -129,6 +130,7 @@ def format_value_for_column(value, col_type):
         return str(value)  # fallback: treat as text
 
 def create_or_update_monday_item(record, monday_items, monday_board_id, monday_token, field_mapping):
+    import requests
     salesforce_id = record.get("Id")
     if not salesforce_id:
         return
