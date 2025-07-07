@@ -29,6 +29,11 @@ except (ModuleNotFoundError, ValueError, AttributeError, TypeError):
     SF_PASSWORD = os.getenv("SF_PASSWORD")
     MONDAY_TOKEN = os.getenv("MONDAY_TOKEN")
 
+API_URL = "https://api.monday.com/v2"
+HEADERS = {
+    "Authorization": MONDAY_TOKEN,
+    "Content-Type": "application/json"
+}
 
 CONNECTIONS = [
     {
