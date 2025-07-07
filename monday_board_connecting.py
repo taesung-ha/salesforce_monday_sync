@@ -1,6 +1,8 @@
 from collections import defaultdict
 import requests, json
-from config import API_URL, HEADERS
+from config import API_URL
+
+
 
 def fetch_items_with_column(board_id, value_col_id, extra_col_id=None):
     items = defaultdict(dict)
