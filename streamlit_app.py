@@ -11,7 +11,7 @@ st.markdown("Use the buttons below to control synchronization and linking.")
 # 버튼 1: 레코드 업데이트
 if st.button("🔄 Sync Records (Salesforce → Monday.com)"):
     with st.spinner("Syncing records..."):
-        result = subprocess.run(["python", "sync_launcher.py"], capture_output=True, text=True)
+        result = subprocess.run(["python", "streamlit_main.py"], capture_output=True, text=True)
         st.code(result.stdout)
         if result.returncode == 0:
             st.success("✅ Sync completed successfully!")
@@ -22,7 +22,7 @@ if st.button("🔄 Sync Records (Salesforce → Monday.com)"):
 # 버튼 2: 보드 간 연결
 if st.button("🔗 Link Boards in Monday.com"):
     with st.spinner("Linking boards..."):
-        result = subprocess.run(["python", "connect_launcher.py"], capture_output=True, text=True)
+        result = subprocess.run(["python", "streamlit_main.py", "link"], capture_output=True, text=True)
         st.code(result.stdout)
         if result.returncode == 0:
             st.success("✅ Linking completed successfully!")
