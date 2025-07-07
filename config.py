@@ -5,8 +5,10 @@ import os
 try:
     import streamlit as st
 
-    # st.secrets 내부 딕셔너리에 직접 접근해서 안전하게 확인
-    if all(k in getattr(st.secrets, "_secrets", {}) for k in [
+    # _secrets가 None일 수도 있으므로, 강제로 dict로 변환
+    safe_secrets = dict(getattr(st.secrets, "_secrets", {}) or {})
+
+    if all(k in safe_secrets for k in [
         "SF_CLIENT_ID", "SF_CLIENT_SECRET", "SF_USERNAME", "SF_PASSWORD", "MONDAY_TOKEN"
     ]):
         SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
@@ -17,7 +19,7 @@ try:
     else:
         raise ValueError("No valid st.secrets. Falling back to dotenv.")
 
-except (ModuleNotFoundError, ValueError, AttributeError):
+except (ModuleNotFoundError, ValueError, AttributeError, TypeError):
     from dotenv import load_dotenv
     load_dotenv()
 
@@ -26,12 +28,6 @@ except (ModuleNotFoundError, ValueError, AttributeError):
     SF_USERNAME = os.getenv("SF_USERNAME")
     SF_PASSWORD = os.getenv("SF_PASSWORD")
     MONDAY_TOKEN = os.getenv("MONDAY_TOKEN")
-
-API_URL = "https://api.monday.com/v2"
-HEADERS = {
-    "Authorization": MONDAY_TOKEN,
-    "Content-Type": "application/json"
-}
 
 
 CONNECTIONS = [
