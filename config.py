@@ -2,32 +2,48 @@
 #%%
 import os
 
-try:
-    import streamlit as st
+def get_envs():
+    try:
+        import streamlit as st  # ⬅️ 함수 안으로 이동
 
-    # _secrets가 None일 수도 있으므로, 강제로 dict로 변환
-    safe_secrets = dict(getattr(st.secrets, "_secrets", {}) or {})
+        # _secrets가 None일 수도 있으므로, 강제로 dict로 변환
+        safe_secrets = dict(getattr(st.secrets, "_secrets", {}) or {})
 
-    if all(k in safe_secrets for k in [
-        "SF_CLIENT_ID", "SF_CLIENT_SECRET", "SF_USERNAME", "SF_PASSWORD", "MONDAY_TOKEN"
-    ]):
-        SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
-        SF_CLIENT_SECRET = st.secrets["SF_CLIENT_SECRET"]
-        SF_USERNAME = st.secrets["SF_USERNAME"]
-        SF_PASSWORD = st.secrets["SF_PASSWORD"]
-        MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
-    else:
-        raise ValueError("No valid st.secrets. Falling back to dotenv.")
+        if all(k in safe_secrets for k in [
+            "SF_CLIENT_ID", "SF_CLIENT_SECRET", "SF_USERNAME", "SF_PASSWORD", "MONDAY_TOKEN"
+        ]):
+            return {
+                "SF_CLIENT_ID": st.secrets["SF_CLIENT_ID"],
+                "SF_CLIENT_SECRET": st.secrets["SF_CLIENT_SECRET"],
+                "SF_USERNAME": st.secrets["SF_USERNAME"],
+                "SF_PASSWORD": st.secrets["SF_PASSWORD"],
+                "MONDAY_TOKEN": st.secrets["MONDAY_TOKEN"]
+            }
+    except Exception:
+        pass
 
-except (ModuleNotFoundError, ValueError, AttributeError, TypeError):
-    from dotenv import load_dotenv
-    load_dotenv()
+    try:
+        from dotenv import load_dotenv  # ⬅️ 여기만 수정
+        load_dotenv()
+    except Exception:
+        pass
 
-    SF_CLIENT_ID = os.getenv("SF_CLIENT_ID")
-    SF_CLIENT_SECRET = os.getenv("SF_CLIENT_SECRET")
-    SF_USERNAME = os.getenv("SF_USERNAME")
-    SF_PASSWORD = os.getenv("SF_PASSWORD")
-    MONDAY_TOKEN = os.getenv("MONDAY_TOKEN")
+    return {
+        "SF_CLIENT_ID": os.getenv("SF_CLIENT_ID"),
+        "SF_CLIENT_SECRET": os.getenv("SF_CLIENT_SECRET"),
+        "SF_USERNAME": os.getenv("SF_USERNAME"),
+        "SF_PASSWORD": os.getenv("SF_PASSWORD"),
+        "MONDAY_TOKEN": os.getenv("MONDAY_TOKEN")
+    }
+
+
+# 아래 부분 유지 – 기존 구조 유지
+env = get_envs()
+SF_CLIENT_ID = env["SF_CLIENT_ID"]
+SF_CLIENT_SECRET = env["SF_CLIENT_SECRET"]
+SF_USERNAME = env["SF_USERNAME"]
+SF_PASSWORD = env["SF_PASSWORD"]
+MONDAY_TOKEN = env["MONDAY_TOKEN"]
 
 API_URL = "https://api.monday.com/v2"
 HEADERS = {
@@ -83,5 +99,5 @@ CONNECTIONS = [
         "source_col": "text_mks61vvy",  # CONTACT_ACCOUNT_ID_COL
         "target_col": "text_mkrykpx4",  # ACCOUNT_ID_COL
         "connect_col": "board_relation_mks98dnn",  # CONTACT_CONNECT_COL_ID_ACCOUNT
-    }
+    },
 ]
