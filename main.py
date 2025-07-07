@@ -58,4 +58,17 @@ def main():
     print("🎉 Process completed successfully!", flush=True)
     
 if __name__ == "__main__":
-    main()
+    import sys
+    if len(sys.argv) > 1:
+        mode = sys.argv[1]
+        if mode == "sync":
+            sync_boards()
+            save_sync_time()
+        elif mode == "link":
+            connect_all_boards()
+        elif mode == "all":
+            main()
+        else:
+            print("❌ Unknown mode. Use: sync | link | all")
+    else:
+        main()
