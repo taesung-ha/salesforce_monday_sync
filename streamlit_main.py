@@ -31,10 +31,3 @@ def run_command_live(command):
 if st.button("🔄 Sync Items from Salesforce"):
     st.info("Running item sync...")
     run_command_live([sys.executable, "main.py", "sync"])
-
-'''
-# 🔗 버튼 2: 보드 연결
-if st.button("🔗 Connect Boards"):
-    st.info("Running board linking...")
-    run_command_live([sys.executable, "main.py", "link"])
-'''
