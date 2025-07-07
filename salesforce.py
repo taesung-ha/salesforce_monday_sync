@@ -1,6 +1,7 @@
-import requests, json
+import json
 
 def get_salesforce_access_token(client_id, client_secret, username, password):
+    import requests
     url = "https://login.salesforce.com/services/oauth2/token"
     data = {
         "grant_type": "password",
@@ -22,7 +23,7 @@ def get_salesforce_access_token(client_id, client_secret, username, password):
     return access_token, instance_url
 
 def fetch_salesforce_records(instance_url, access_token, object_name, select_fields, conditions = None, from_datetime=None):
-    
+    import requests
     query = f"SELECT {select_fields} FROM {object_name}"
 
     where_clauses = []
