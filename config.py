@@ -5,15 +5,19 @@ import os
 try:
     import streamlit as st
 
-    if all(k in st.secrets for k in ["SF_CLIENT_ID", "SF_CLIENT_SECRET", "SF_USERNAME", "SF_PASSWORD", "MONDAY_TOKEN"]):
+    # st.secrets 내부 딕셔너리에 직접 접근해서 안전하게 확인
+    if all(k in getattr(st.secrets, "_secrets", {}) for k in [
+        "SF_CLIENT_ID", "SF_CLIENT_SECRET", "SF_USERNAME", "SF_PASSWORD", "MONDAY_TOKEN"
+    ]):
         SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
         SF_CLIENT_SECRET = st.secrets["SF_CLIENT_SECRET"]
         SF_USERNAME = st.secrets["SF_USERNAME"]
         SF_PASSWORD = st.secrets["SF_PASSWORD"]
         MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
     else:
-        raise ValueError("st.secrets does not contain all required keys")
-except (ModuleNotFoundError, ValueError):
+        raise ValueError("No valid st.secrets. Falling back to dotenv.")
+
+except (ModuleNotFoundError, ValueError, AttributeError):
     from dotenv import load_dotenv
     load_dotenv()
 
@@ -28,6 +32,7 @@ HEADERS = {
     "Authorization": MONDAY_TOKEN,
     "Content-Type": "application/json"
 }
+
 
 CONNECTIONS = [
     {
