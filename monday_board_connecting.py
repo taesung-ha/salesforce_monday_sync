@@ -72,7 +72,7 @@ def connect_items(source_board_id, target_board_id, source_key_col_id, target_ke
         source_item_id = int(source_data["item_id"])
 
         if not target_item_ids:
-            print(f"⚠️ 매칭 실패: '{key}' (Source item {source_item_id})")
+            print(f"⚠️ Matching Failed: '{key}' (Source item {source_item_id})")
             continue
 
         # 현재 연결된 항목이 있는지 확인

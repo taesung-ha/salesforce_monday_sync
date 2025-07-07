@@ -83,5 +83,5 @@ CONNECTIONS = [
         "source_col": "text_mks61vvy",  # CONTACT_ACCOUNT_ID_COL
         "target_col": "text_mkrykpx4",  # ACCOUNT_ID_COL
         "connect_col": "board_relation_mks98dnn",  # CONTACT_CONNECT_COL_ID_ACCOUNT
-    },
+    }
 ]

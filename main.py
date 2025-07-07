@@ -1,9 +1,10 @@
-print("🎯 main.py 실행됨!", flush=True)
+print("🎯 main.py Implemented!", flush=True)
 #%%
 from sync import sync_salesforce_to_monday
 from sync_account import sync_account_records
 from config import CONNECTIONS
 from monday_board_connecting import connect_items
+from sync_utils import save_sync_time
 
 def sync_boards():
     board_configs = [
@@ -32,7 +33,7 @@ def sync_boards():
 def connect_all_boards():
     print("\n🔗 Starting Monday board linkage...")
     for conn in CONNECTIONS:
-        print(f"\n=== ⛓ {conn['name']} 연결 시작 ===", flush=True)
+        print(f"\n=== ⛓ {conn['name']} Start linking the boards ===", flush=True)
         try:
             connect_items(
                 source_board_id=conn["source_board"],
@@ -46,8 +47,15 @@ def connect_all_boards():
 
 def main():
     sync_boards()
+    
+    save_sync_time()
+    print("📝 Sync time updated.")
     connect_all_boards()
     print("\n🔄 All boards synced and linked successfully!", flush=True)
+    
+
+    
     print("🎉 Process completed successfully!", flush=True)
+    
 if __name__ == "__main__":
     main()

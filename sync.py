@@ -1,4 +1,3 @@
-import os
 import json
 from config import (
     SF_CLIENT_ID,
@@ -10,8 +9,7 @@ from config import (
 
 from salesforce import get_salesforce_access_token, fetch_salesforce_records
 from monday import get_monday_items, create_or_update_monday_item
-from sync_utils import get_last_sync_time, save_sync_time
-
+from sync_utils import get_last_sync_time
 
 def sync_salesforce_to_monday(board_config_path):
     with open(board_config_path) as f:
@@ -47,7 +45,7 @@ def sync_salesforce_to_monday(board_config_path):
         object_name = salesforce_object, 
         select_fields = salesforce_select_fields, 
         conditions = salesforce_condition,
-        from_datetime = None
+        from_datetime = last_sync
     )
 
     if not records:
@@ -61,7 +59,7 @@ def sync_salesforce_to_monday(board_config_path):
             object_name = salesforce_object, 
             select_fields = salesforce_select_fields, 
             conditions = salesforce_condition2,
-            from_datetime = None
+            from_datetime = last_sync
         )
 
         records.extend(records2)
@@ -80,6 +78,3 @@ def sync_salesforce_to_monday(board_config_path):
         create_or_update_monday_item(record, monday_items, monday_board_id, MONDAY_TOKEN, field_mapping)
 
     print(f"Successfully synced {len(records)} records to Monday.com.")
-
-    save_sync_time()
-    print("📝 Sync time updated.")

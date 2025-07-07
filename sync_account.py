@@ -28,8 +28,12 @@ def get_id_set_for_account(instance_url, access_token, last_sync):
     query = f'''
     SELECT AccountId, ContactId, LastModifiedDate
     FROM Opportunity
-    WHERE RecordTypeId = '0123p000000EILEAA4' AND LastModifiedDate >= {last_sync}
+    WHERE RecordTypeId = '0123p000000EILEAA4'
     '''
+    
+    if last_sync:
+        query += f" AND LastModifiedDate >= {last_sync}"
+    
     res = requests.get(query_url, headers=headers, params={"q": query})
     if res.status_code != 200:
         print(f"❌ Failed to query Opportunity: {res.status_code} - {res.text}")
@@ -42,8 +46,12 @@ def get_id_set_for_account(instance_url, access_token, last_sync):
     query = f'''
     SELECT ConvertedAccountId, ConvertedContactId, LastModifiedDate
     FROM Lead
-    WHERE Role__c = 'Partner' AND CreatedDate >= 2024-07-01T00:00:00Z AND LastModifiedDate >= {last_sync}
+    WHERE Role__c = 'Partner' AND CreatedDate >= 2024-07-01T00:00:00Z
     '''
+    
+    if last_sync:
+        query += f" AND LastModifiedDate >= {last_sync}"
+    
     res = requests.get(query_url, headers=headers, params={"q": query})
     if res.status_code != 200:
         print(f"❌ Failed to query Lead: {res.status_code} - {res.text}")
@@ -60,8 +68,11 @@ def get_id_set_for_account(instance_url, access_token, last_sync):
             query = f'''
             SELECT AccountId
             FROM Contact
-            WHERE Id IN {soql_ids} AND LastModifiedDate >= {last_sync}
+            WHERE Id IN {soql_ids}
             '''
+            if last_sync:
+                query += f" AND LastModifiedDate >= {last_sync}"
+            
             res = requests.get(query_url, headers=headers, params={"q": query})
             if res.status_code != 200:
                 print(f"❌ Failed to query Contact: {res.status_code} - {res.text}")
@@ -92,7 +103,6 @@ def sync_account_records():
 
     # 🔁 Get last sync time
     last_sync = get_last_sync_time()
-    last_sync = "2020-06-04T07:28:15.072942+00:00" #우선은 이렇게 하드코딩
     print(f"⏱️ Last sync time: {last_sync}")
 
     # 🧾 Filter by modified date
@@ -112,8 +122,10 @@ def sync_account_records():
         query = f"""
         SELECT {selected_fields}
         FROM Account
-        WHERE Id IN ({soql_ids}) AND LastModifiedDate >= {last_sync}
+        WHERE Id IN ({soql_ids})
         """
+        if last_sync:
+            query += f" AND LastModifiedDate >= {last_sync}"
         res = requests.get(query_url, headers=headers, params={"q": query})
         if res.status_code != 200:
             print(f"❌ Failed to query Account: {res.status_code} - {res.text}")
@@ -129,10 +141,6 @@ def sync_account_records():
         create_or_update_monday_item(record, monday_items, monday_board_id, MONDAY_TOKEN, field_mapping)
 
     print(f"✅ Synced {len(records)} Account records to Monday.com.", flush=True)
-
-    # 🕒 Save sync time
-    save_sync_time()
-    print("📝 Sync time updated.", flush= True)
 
 
 if __name__ == "__main__":
