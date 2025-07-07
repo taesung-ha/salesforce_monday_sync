@@ -1,12 +1,15 @@
 import json
-from config import get_envs
+from config import (
+    SF_CLIENT_ID,
+    SF_CLIENT_SECRET,
+    SF_USERNAME,
+    SF_PASSWORD,
+    MONDAY_TOKEN
+)
 
 from salesforce import get_salesforce_access_token, fetch_salesforce_records
 from monday import get_monday_items, create_or_update_monday_item
 from sync_utils import get_last_sync_time
-
-env = get_envs()
-
 
 def sync_salesforce_to_monday(board_config_path):
     with open(board_config_path) as f:
