@@ -13,6 +13,7 @@ if st.button("🔄 Sync Items from Salesforce"):
         else:
             st.success("✅ Salesforce items synced!")
 
+'''
 if st.button("🔗 Connect Boards"):
     with st.spinner("Running board linking..."):
         result = subprocess.run([sys.executable, "main.py", "link"], capture_output=True, text=True)
@@ -21,3 +22,4 @@ if st.button("🔗 Connect Boards"):
             st.error(result.stderr)
         else:
             st.success("✅ Boards linked!")
+'''
