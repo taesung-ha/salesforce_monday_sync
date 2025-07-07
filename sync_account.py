@@ -1,12 +1,9 @@
 import json
 from collections import defaultdict
-import requests
-from datetime import datetime
-
 from config import SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD, MONDAY_TOKEN
 from salesforce import get_salesforce_access_token
 from monday import get_monday_items, create_or_update_monday_item
-from sync_utils import get_last_sync_time, save_sync_time
+from sync_utils import get_last_sync_time
 
 
 def load_account_config(path="mapping_config/account.json"):
@@ -20,6 +17,7 @@ def chunked(iterable, size=1000):
 
 
 def get_id_set_for_account(instance_url, access_token, last_sync):
+    import requests
     query_url = f"{instance_url}/services/data/v58.0/query"
     headers = {"Authorization": f"Bearer {access_token}"}
     id_dict = defaultdict(list)
@@ -85,6 +83,7 @@ def get_id_set_for_account(instance_url, access_token, last_sync):
 
 
 def sync_account_records():
+    import requests
     config = load_account_config()
     monday_board_id = config["board_id"]
     salesforce_column_id = config["salesforce_id_column_id"]
