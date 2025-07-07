@@ -1,14 +1,19 @@
 # config.py
 #%%
+import os
+
 try:
     import streamlit as st
-    SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
-    SF_CLIENT_SECRET = st.secrets["SF_CLIENT_SECRET"]
-    SF_USERNAME = st.secrets["SF_USERNAME"]
-    SF_PASSWORD = st.secrets["SF_PASSWORD"]
-    MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
-except ModuleNotFoundError:
-    import os
+
+    if all(k in st.secrets for k in ["SF_CLIENT_ID", "SF_CLIENT_SECRET", "SF_USERNAME", "SF_PASSWORD", "MONDAY_TOKEN"]):
+        SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
+        SF_CLIENT_SECRET = st.secrets["SF_CLIENT_SECRET"]
+        SF_USERNAME = st.secrets["SF_USERNAME"]
+        SF_PASSWORD = st.secrets["SF_PASSWORD"]
+        MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
+    else:
+        raise ValueError("st.secrets does not contain all required keys")
+except (ModuleNotFoundError, ValueError):
     from dotenv import load_dotenv
     load_dotenv()
 
