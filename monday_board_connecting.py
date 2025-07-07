@@ -1,8 +1,9 @@
 from collections import defaultdict
-import requests, json
+import json
 from config import API_URL, HEADERS
 
 def fetch_items_with_column(board_id, value_col_id, extra_col_id=None):
+    import requests
     items = defaultdict(dict)
     cursor = None
     total_count = 0
@@ -57,6 +58,7 @@ def fetch_items_with_column(board_id, value_col_id, extra_col_id=None):
     return items
 # %%
 def connect_items(source_board_id, target_board_id, source_key_col_id, target_key_col_id, connect_col_id):
+    import requests
     print(f"📥 Target 보드({target_board_id}) 데이터 불러오는 중...")
     target_map_raw = fetch_items_with_column(target_board_id, target_key_col_id)
     # target_map을 item_id만 남기는 dict로 변환
