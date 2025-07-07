@@ -4,22 +4,35 @@ import sys
 
 st.title("📊 Salesforce ↔ Monday.com Sync Tool")
 
-if st.button("🔄 Sync Items from Salesforce"):
-    with st.spinner("Running item sync..."):
-        result = subprocess.run([sys.executable, "main.py", "sync"], capture_output=True, text=True)
-        st.code(result.stdout)
-        if result.stderr:
-            st.error(result.stderr)
-        else:
-            st.success("✅ Salesforce items synced!")
+def run_command_live(command):
+    placeholder = st.empty()
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1
+    )
 
-'''
+    log = ""
+    for line in process.stdout:
+        log += line
+        placeholder.code(log, language="bash")
+    
+    process.stdout.close()
+    process.wait()
+    
+    if process.returncode == 0:
+        st.success("✅ Operation completed successfully!")
+    else:
+        st.error("❌ Operation failed. Check the logs above.")
+
+# 🔄 버튼 1: 아이템 동기화
+if st.button("🔄 Sync Items from Salesforce"):
+    st.info("Running item sync...")
+    run_command_live([sys.executable, "main.py", "sync"])
+
+# 🔗 버튼 2: 보드 연결
 if st.button("🔗 Connect Boards"):
-    with st.spinner("Running board linking..."):
-        result = subprocess.run([sys.executable, "main.py", "link"], capture_output=True, text=True)
-        st.code(result.stdout)
-        if result.stderr:
-            st.error(result.stderr)
-        else:
-            st.success("✅ Boards linked!")
-'''
+    st.info("Running board linking...")
+    run_command_live([sys.executable, "main.py", "link"])
