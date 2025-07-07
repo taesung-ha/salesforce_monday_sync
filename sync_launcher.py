@@ -1,32 +1,36 @@
 # sync_launcher.py
-import streamlit as st
-import subprocess
-import sys
+from sync import sync_salesforce_to_monday
+from sync_account import sync_account_records
+from sync_utils import save_sync_time
 
-st.title("🔁 Salesforce → Monday.com Sync Launcher")
+print("🚀 Starting sync_launcher...", flush=True)
 
-if st.button("🚀 Launch Sync"):
-    log_placeholder = st.empty()
-    log_output = ""
+def sync_boards():
+    board_configs = [
+        "mapping_config/contact.json",
+        "mapping_config/lead.json",
+        "mapping_config/opportunity.json"
+    ]
 
-    with st.spinner("Sync in progress..."):
+    for config_path in board_configs:
+        print(f"\n🔄 Syncing board with config: {config_path}", flush=True)
+        try:
+            sync_salesforce_to_monday(config_path)
+            print(f"✅ Successfully synced: {config_path}", flush=True)
+        except Exception as e:
+            print(f"❌ Error syncing {config_path}: {e}", flush=True)
 
-        process = subprocess.Popen(
-            [sys.executable, "main.py"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1
-        )
+    print("\n📦 Syncing Account board...", flush=True)
+    try:
+        sync_account_records()
+        print("✅ Successfully synced Account board.", flush=True)
+    except Exception as e:
+        print(f"❌ Error syncing Account board: {e}", flush=True)
 
-        for line in process.stdout:
-            log_output += line
-            log_placeholder.code(log_output)
+    save_sync_time()
+    print("🕒 Sync time updated.", flush=True)
 
-        process.stdout.close()
-        return_code = process.wait()
 
-    if return_code == 0:
-        st.success("✅ Sync completed successfully!")
-    else:
-        st.error(f"❌ Sync failed with return code {return_code}")
+if __name__ == "__main__":
+    sync_boards()
+    print("✅ sync_launcher completed successfully!", flush=True)

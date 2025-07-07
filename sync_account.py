@@ -35,6 +35,7 @@ def get_id_set_for_account(instance_url, access_token, last_sync):
         query += f" AND LastModifiedDate >= {last_sync}"
     
     res = requests.get(query_url, headers=headers, params={"q": query})
+    
     if res.status_code != 200:
         print(f"❌ Failed to query Opportunity: {res.status_code} - {res.text}")
         return set()

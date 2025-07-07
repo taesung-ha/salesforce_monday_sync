@@ -26,7 +26,7 @@ def fetch_items_with_column(board_id, value_col_id, extra_col_id=None):
           }
         }
         '''
-        
+
         variables = {"boardId": board_id, "cursor": cursor}
         res = requests.post(API_URL, headers=HEADERS, json={"query": query, "variables": variables})
         data = res.json()["data"]["boards"][0]["items_page"]
