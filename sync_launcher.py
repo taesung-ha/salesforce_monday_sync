@@ -1,4 +1,5 @@
 # sync_launcher.py
+import requests
 from sync import sync_salesforce_to_monday
 from sync_account import sync_account_records
 from sync_utils import save_sync_time
