@@ -1,5 +1,5 @@
 # streamlit_app.py
-
+from config_streamlit import *
 import streamlit as st
 import subprocess
 
