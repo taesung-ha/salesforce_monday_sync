@@ -4,28 +4,30 @@ import os
 
 def load_env():
     try:
-        import streamlit as st  # ✅ 함수 안에서만 import
-
-        SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
-        SF_CLIENT_SECRET = st.secrets["SF_CLIENT_SECRET"]
-        SF_USERNAME = st.secrets["SF_USERNAME"]
-        SF_PASSWORD = st.secrets["SF_PASSWORD"]
-        MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
-
+        # Streamlit 환경 (Streamlit에서만 실행되는 경우)
+        import streamlit as st
+        if hasattr(st, "secrets") and "SF_CLIENT_ID" in st.secrets:
+            SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
+            SF_CLIENT_SECRET = st.secrets["SF_CLIENT_SECRET"]
+            SF_USERNAME = st.secrets["SF_USERNAME"]
+            SF_PASSWORD = st.secrets["SF_PASSWORD"]
+            MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
+            return SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD, MONDAY_TOKEN
     except Exception:
-        try:
-            from dotenv import load_dotenv
-            load_dotenv()
-        except:
-            pass
+        pass
 
-        SF_CLIENT_ID = os.getenv("SF_CLIENT_ID")
-        SF_CLIENT_SECRET = os.getenv("SF_CLIENT_SECRET")
-        SF_USERNAME = os.getenv("SF_USERNAME")
-        SF_PASSWORD = os.getenv("SF_PASSWORD")
-        MONDAY_TOKEN = os.getenv("MONDAY_TOKEN")
+    # 로컬 개발 or Render 배포 환경
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    SF_CLIENT_ID = os.getenv("SF_CLIENT_ID")
+    SF_CLIENT_SECRET = os.getenv("SF_CLIENT_SECRET")
+    SF_USERNAME = os.getenv("SF_USERNAME")
+    SF_PASSWORD = os.getenv("SF_PASSWORD")
+    MONDAY_TOKEN = os.getenv("MONDAY_TOKEN")
 
     return SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD, MONDAY_TOKEN
+
 
 SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD, MONDAY_TOKEN = load_env()
 
