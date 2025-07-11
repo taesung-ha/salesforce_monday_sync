@@ -134,16 +134,19 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
     salesforce_id = record.get("Id")
     if not salesforce_id:
         return
-
-    item_name = record.get('Name') or f"{record.get('FirstName', '')} {record.get('LastName', '')}".strip()
+    
+    if monday_board_id == "9378000505":
+        item_name = record.get('Company')
+    else:
+        item_name = record.get('Name') or f"{record.get('FirstName', '')} {record.get('LastName', '')}".strip()
 
     # Step 1: 변환 대상 만들기
-    column_values = {}
-    for monday_col_id, sf_field in field_mapping.items():
-        value = record.get(sf_field, "")
+    column_values = {} #이 monday컬럼에는 이 값이 들어가야해~ 하는 dict
+    for monday_col_id, sf_field in field_mapping.items(): # 가령 monday_col_id = "text_mkrykrc2", sf_field = "Name"
+        value = record.get(sf_field, "") # value = record.get('Name', "") = 'Stesting Stesstee'
         # 기존 monday item이 있다면 type 재활용
-        if salesforce_id in monday_items:
-            col_type = monday_items[salesforce_id]["column_values"].get(monday_col_id, {}).get("type", "text")
+        if salesforce_id in monday_items: # 00QUO00000F8FAv2AN가 monday_items에 있다면
+            col_type = monday_items[salesforce_id]["column_values"].get(monday_col_id, {}).get("type", "text") #현재 Stesstee의 컬럼 타입을 가져옴
         else:
             col_type = "text"
         column_values[monday_col_id] = format_value_for_column(value, col_type)
