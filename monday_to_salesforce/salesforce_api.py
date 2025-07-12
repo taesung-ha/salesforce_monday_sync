@@ -6,6 +6,8 @@ from config import SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD
 ACCESS_TOKEN, INSTANCE_URL = get_salesforce_access_token(SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD)
 API_VERSION = "v59.0"
 
+import json
+
 def create_salesforce_lead_from_monday(data: dict):
     organization_name = data['event']['pulseName']
     column_values = data['event']['columnValues']
