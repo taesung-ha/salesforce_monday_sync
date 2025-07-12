@@ -25,7 +25,8 @@ async def monday_webhook(req: Request):
         
         item_data = get_monday_item_details(item_id, board_id)
         lead_source = item_data.get('short_textzb4g11iz', {}).get('value', '')
-        
+        print("DEBUG item_data:", item_data)
+        '''
         if lead_source != 'MondayForm':
             return {"status": "⏩ Skipped: Not from MondayForm"}
 
@@ -33,7 +34,7 @@ async def monday_webhook(req: Request):
         return {"status": result}
 
     return {"status": "⏩ Skipped: Not Qualified update"}
-
+'''
 
 
 '''
