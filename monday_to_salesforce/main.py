@@ -99,3 +99,17 @@ item_data:
 'text_mkry427s': {}, 'text_mkryr3pj': {}, 'text_mkry53df': {}, 'text_mkryp43z': {}, 
 'text_mkry581q': {}, 'date_mkspa7vk': {'date': '2025-07-11', 'changed_at': '2025-07-12T06:08:27.423Z'}}
 '''
+'''
+이 에러의 핵심은 여기입니다:
+
+vbnet
+복사
+편집
+KeyError: 'event'
+즉, 이 줄에서:
+
+python
+복사
+편집
+organization_name = data['event']['pulseName']
+'''
