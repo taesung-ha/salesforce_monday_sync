@@ -74,10 +74,21 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
                     value = json.loads(value)
                     parsed_value = value.get("text", "")
 
-                elif col_type == 'dropdown' and value:
-                    # 예: {"ids":[...],"labels":["Option A", "Option B"]}
-                    value = json.loads(value)
-                    parsed_value = {"labels": value.get("labels", [])}
+                elif col_type == 'dropdown':
+                    if value:
+                        value = json.loads(value)
+                        labels = value.get("labels")
+                        
+                        if labels is None and text:
+                            labels = [t.strip() for t in text.split(',')]
+                        
+                        parsed_value = {"labels": labels or []}
+
+                    elif text:
+                        parsed_value = {"labels": [t.strip() for t in text.split(',')]}
+                        
+                    else:
+                        parsed_value = {"labels": []}
 
                 else:
                     parsed_value = text  # fallback: use plain text
@@ -128,6 +139,22 @@ def format_value_for_column(value, col_type):
             return 0
     else:
         return str(value)  # fallback: treat as text
+    
+def is_same_value(a, b):
+    # 둘 다 "빈 값"이면 같다고 처리
+    empty_like = [None, "", {}, {"label": None}, {"labels": []}]
+    if a in empty_like and b in empty_like:
+        return True
+
+    # status / color / dropdown: label 기반 비교
+    if isinstance(a, dict) and isinstance(b, dict):
+        if "label" in a or "label" in b:
+            return a.get("label") == b.get("label")
+        if "labels" in a or "labels" in b:
+            return a.get("labels") == b.get("labels")
+
+    # 기본 비교
+    return a == b
 
 def create_or_update_monday_item(record, monday_items, monday_board_id, monday_token, field_mapping):
     import requests
@@ -179,21 +206,18 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
 
     # Step 3: Update
     current = monday_items[salesforce_id]['column_values']
+    change_log = []
     updated = {}
+    
     for k, v in column_values.items(): #column_values는 salesforce에서 가져온 값이고, current는 monday_items에서 가져온 값임
         current_val = current.get(k, {}).get("value")
-        if k == 'short_textzb4g11iz':
-            print(f"monday: (column): {k} value: {current_val}, salesforce: {v}")
-
-        if isinstance(current_val, dict) and isinstance(v, dict):
-            label_equal = v.get("label") == current_val.get("label")
-            labels_equal = v.get("labels") == current_val.get("labels")
-            if label_equal or labels_equal:
-                continue
-            else:
-                updated[k] = v
-        elif current_val != v:
+        
+        if is_same_value(current_val, v):
+            continue
+        else:
             updated[k] = v
+            change_log.append(f"    - {k}: {current_val} → {v}")
+
             
     if updated:
         query = '''
@@ -210,10 +234,15 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
         }
         r = requests.post(MONDAY_API_URL, headers={"Authorization": monday_token}, json={"query": query, "variables": variables})
         response = r.json()
-        if "errors" in response:
+        if "errors" in response or "data" not in response:
             print(f"❌ Update error for {item_name}")
-            print(response["errors"])
+            print(json.dumps(response.get("errors", {}), indent=2))
+            
         else:
+            updated_fields = ', '.join(updated.keys())
             print(f"🔁 Updated: {item_name}", flush=True)
+            for line in change_log:
+                print(line, flush=True)
+                
     else:
         print(f"⏩ Skipped (no change): {item_name}", flush=True)

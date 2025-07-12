@@ -1,7 +1,7 @@
 {
     "board_id": "9378000505",
     "salesforce_id_column_id": "text_mkryhch5",
-    "salesforce_select_fields": "Id, Name, LastName, Website, FirstName, ConvertedAccountId, ConvertedContactId, RecordTypeId, ConvertedOpportunityId, CreatedDate, LastModifiedDate, Company, Street, City, State, PostalCode, Country, StateCode, CountryCode, Address, Phone, MobilePhone, Email, Description, Status, OwnerId, IsConverted, CreatedById, LastModifiedById, Role__c, Record_Type_ID_Text__c, LeadSource",
+    "salesforce_select_fields": "Id, Name, LastName, Website, Industry, FirstName, ConvertedAccountId, ConvertedContactId, RecordTypeId, ConvertedOpportunityId, CreatedDate, LastModifiedDate, Company, Street, City, State, PostalCode, Country, StateCode, CountryCode, Address, Phone, MobilePhone, Email, Description, Status, OwnerId, IsConverted, CreatedById, LastModifiedById, Role__c, Record_Type_ID_Text__c, LeadSource",
     "salesforce_object": "Lead",
     "salesforce_condition": "Role__c = 'Partner' AND CreatedDate >= 2024-07-01T00:00:00Z",
     "field_mapping": {
@@ -29,6 +29,7 @@
         "text_mkrymwp3": "Email",
         "long_text_mksjh7w5": "Description",
         "color_mksj2adq": "Status",
+        "color_mksfebkh": "Industry",
         "text_mkryxqtf": "IsConverted",
         "text_mkryf4cd": "Role__c",
         "short_textzb4g11iz": "LeadSource"
