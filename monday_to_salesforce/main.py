@@ -1,6 +1,8 @@
+# main.py
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from salesforce_api import send_to_salesforce
+from salesforce_api import create_salesforce_lead_from_monday
+from monday_api import get_monday_item_details
 
 app = FastAPI()
 
@@ -12,14 +14,26 @@ async def monday_webhook(req: Request):
     if "challenge" in data:
         return JSONResponse(content={"challenge": data["challenge"]})
     
-    try:
-        item_name = data['event']['pulseName']
-        board_id = data['event']['boardId']
-    except KeyError:
-        return {"error": "Invalid payload"}
+    event = data.get("event", {})
+    column_id = event.get("columnId", "")
+    new_value = event.get("value", {})
+    status_label = new_value.get("label", {}).get("text", "")
     
-    #result = send_to_salesforce(item_name, board_id)
-    #return {"status": result}
+    if column_id == "color_mksj2adq" and status_label == "Qualified":
+        item_id = event.get("pulseId", "")
+        board_id = event.get("boardId", "")
+        
+        item_data = get_monday_item_details(item_id, board_id)
+        lead_source = item_data.get('short_textzb4g11iz', {}).get('value', '')
+        
+        if lead_source != 'MondayForm':
+            return {"status": "⏩ Skipped: Not from MondayForm"}
+
+        result = create_salesforce_lead_from_monday(item_data)
+        return {"status": result}
+
+    return {"status": "⏩ Skipped: Not Qualified update"}
+
 
 
 '''
@@ -43,4 +57,16 @@ async def monday_webhook(req: Request):
 'dropdown_mksf657r': {'chosenValues': [{'id': 10, 'name': 'Other'}]}, 
 'text_mksfjtqd': {'value': 'where did you hear-please specify'}, 
 'short_textzb4g11iz': {'value': 'MondayForm'}}, 'triggerUuid': 'c4d09d07a52de2707c7a0f40479f7f89'}}
+'''
+
+'''
+{'event': 
+{'app': 'monday', 'type': 'update_column_value', 'triggerTime': '2025-07-12T09:48:32.792Z', 
+'subscriptionId': 542173598, 'isRetry': False, 'userId': 75857771, 'originalTriggerUuid': None, 'boardId': 9378000505, 
+'groupId': 'group_mkry9yes', 'pulseId': 9575061505, 'pulseName': 'Organization Name', 'columnId': 'color_mksj2adq', 
+'columnType': 'color', 'columnTitle': 'Status', 'value': {'label': {'index': 4, 'text': 'Review New Lead', 
+'style': {'color': '#9d50dd', 'border': '#9238af', 'var_name': 'purple'}, 'is_done': False}, 'post_id': None}, 
+'previousValue': {'label': {'index': 1, 'text': 'Open - Not Contacted', 
+'style': {'color': '#00c875', 'border': '#00b461', 'var_name': 'green-shadow'}, 'is_done': True}, 'post_id': None}, 
+'changedAt': 1752313712.3719661, 'isTopGroup': True, 'triggerUuid': '2e3c2e4bc271f90f8032dd1a30ca6ef1'}}
 '''
