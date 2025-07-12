@@ -13,10 +13,12 @@ def send_to_salesforce(name, board_id):
         "Content-Type": "application/json"
     }
     data = {
-        "LastName": name,
+        "Name": name,
         "Company": f"Board {board_id}"
     }
     res = requests.post(url, headers=headers, json=data)
+
+    print("📡 Salesforce 응답:", res.status_code, res.text)
 
     if res.status_code == 201:
         return "✅ Sent to Salesforce"

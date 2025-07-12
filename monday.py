@@ -86,7 +86,7 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
                     "type": col_type,
                     "value": parsed_value
                 }
-    
+
             salesforce_entry = column_dict.get(salesforce_id_column_id)
             if salesforce_entry:
                 salesforce_id = salesforce_entry.get("value")
@@ -134,7 +134,7 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
     salesforce_id = record.get("Id")
     if not salesforce_id:
         return
-    
+
     if monday_board_id == "9378000505":
         item_name = record.get('Company')
     else:
@@ -182,9 +182,19 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
     updated = {}
     for k, v in column_values.items(): #column_values는 salesforce에서 가져온 값이고, current는 monday_items에서 가져온 값임
         current_val = current.get(k, {}).get("value")
-        if v != current_val:
-            updated[k] = v
+        if k == 'short_textzb4g11iz':
+            print(f"monday: (column): {k} value: {current_val}, salesforce: {v}")
 
+        if isinstance(current_val, dict) and isinstance(v, dict):
+            label_equal = v.get("label") == current_val.get("label")
+            labels_equal = v.get("labels") == current_val.get("labels")
+            if label_equal or labels_equal:
+                continue
+            else:
+                updated[k] = v
+        elif current_val != v:
+            updated[k] = v
+            
     if updated:
         query = '''
         mutation ($itemId: ID!, $boardId: ID!, $columnValues: JSON!) {

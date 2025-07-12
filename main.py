@@ -8,8 +8,8 @@ from sync_utils import save_sync_time
 
 def sync_boards():
     board_configs = [
+         "mapping_config/lead.json",
         "mapping_config/contact.json",
-        "mapping_config/lead.json",
         "mapping_config/opportunity.json"
     ]
 
@@ -48,7 +48,7 @@ def connect_all_boards():
 def main():
     sync_boards()
     
-    save_sync_time()
+    #save_sync_time()
     print("📝 Sync time updated.")
     connect_all_boards()
     print("\n🔄 All boards synced and linked successfully!", flush=True)
@@ -63,7 +63,7 @@ if __name__ == "__main__":
         mode = sys.argv[1]
         if mode == "sync":
             sync_boards()
-            save_sync_time()
+            #save_sync_time()
         elif mode == "link":
             connect_all_boards()
         elif mode == "all":

@@ -6,8 +6,8 @@ sync_file = 'last_sync_time.txt'
 
 def get_last_sync_time():
     if not os.path.exists(sync_file):
-        print("No previous sync time found. Defaulting to 1000 days ago.")
-        return (datetime.now(timezone.utc) - timedelta(days=1000)).isoformat()
+        print("No previous sync time found. Defaulting to 10000 days ago.")
+        return (datetime.now(timezone.utc) - timedelta(days=10000)).isoformat()
     
     try:
         with open(sync_file, 'r') as f:
