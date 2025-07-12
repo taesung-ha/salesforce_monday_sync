@@ -4,7 +4,7 @@ from config import MONDAY_TOKEN
 
 MONDAY_API_URL = "https://api.monday.com/v2"
 
-def get_monday_item_details(item_id, board_id):
+def get_monday_item_details_v2(item_id, board_id):
     query = """
     query ($boardId: ID!, $cursor: String) {
       boards(ids: [$boardId]) {
@@ -36,6 +36,12 @@ def get_monday_item_details(item_id, board_id):
         items = result['data']['boards'][0]['items_page']['items']
         for item in items:
             if item['id'] == str(item_id):  # API에서 ID는 str로 반환됨
+                '''
+                return {
+                    col['id']: json.loads(col['value']) if col['value'] else {}
+                    for col in item['column_values']
+                }
+                '''
                 return item
         cursor = result['data']['boards'][0]['items_page']['cursor']
         if not cursor:

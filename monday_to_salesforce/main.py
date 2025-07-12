@@ -24,6 +24,8 @@ async def monday_webhook(req: Request):
         board_id = event.get("boardId", "")
         
         item_data = get_monday_item_details(item_id, board_id)
+        print(item_data)
+        '''
         lead_source = item_data.get('short_textzb4g11iz')
         if not isinstance(lead_source, str):
             lead_source = ''
@@ -35,7 +37,7 @@ async def monday_webhook(req: Request):
         return {"status": result}
 
     return {"status": "⏩ Skipped: Not Qualified update"}
-
+    '''
 
 
 '''
