@@ -4,7 +4,7 @@ from config import MONDAY_TOKEN
 
 MONDAY_API_URL = "https://api.monday.com/v2"
 
-def get_monday_item_details_v2(item_id, board_id):
+def get_monday_item_details(item_id, board_id):
     query = """
     query ($boardId: ID!, $cursor: String) {
       boards(ids: [$boardId]) {
