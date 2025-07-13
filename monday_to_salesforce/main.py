@@ -5,7 +5,7 @@ from database import SessionLocal, engine
 from models import Base, WebhookLog
 from fastapi.responses import JSONResponse
 from salesforce_api import create_salesforce_lead_from_monday
-from monday_api import get_monday_item_details
+from monday_api import get_monday_item_details, update_monday_column
 import json
 
 Base.metadata.create_all(bind=engine)
@@ -53,15 +53,21 @@ async def monday_webhook(req: Request):
                 print({"status": "⏩ Skipped: Not from MondayForm"})
                 return JSONResponse(content={"status": "⏩ Skipped: Not from MondayForm"})
 
-            result = create_salesforce_lead_from_monday(item_data)
+            lead_id = create_salesforce_lead_from_monday(item_data)
             
-            db.add(WebhookLog(**log_data, status='success', error_message=None))
+            if isinstance(lead_id, str) and lead_id.startswith("00Q"):
+                update_monday_column(item_id=item_id, column_id='text_mkryhch5', value=lead_id)
+                db.add(WebhookLog(**log_data, status='success'))
+            else:
+                db.add(WebhookLog(**log_data, status='failed', error_message=str(lead_id)))
+                
             db.commit()
-            return print({"status": result})
+            
+            return JSONResponse(content={"status": lead_id})
         
         db.add(WebhookLog(**log_data, status='skipped', error_message="Not Qualified update"))
         db.commit()
-        return print({"status": "⏩ Skipped: Not Qualified update"})
+        return JSONResponse(content={"status": "⏩ Skipped: Not Qualified update"})
 
     except Exception as e:
         db.rollback()

@@ -99,3 +99,31 @@ def get_monday_item_details(item_id, board_id):
         if not cursor:
             break
     return {}
+
+def update_monday_column(item_id: str, column_id: str, value: str):
+    query = """
+    mutation ($item_id: Int!, $column_id: String!, $value: JSON!) {
+      change_column_value(item_id: $item_id, column_id: $column_id, value: $value) {
+        id
+      }
+    }
+    """
+    variables = {
+        "item_id": int(item_id),
+        "column_id": column_id,
+        "value": json.dumps({"text": value})
+    }
+
+    headers = {
+        "Authorization": MONDAY_TOKEN,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(
+        MONDAY_API_URL,
+        json={"query": query, "variables": variables},
+        headers=headers
+    )
+    
+    if not response.ok:
+        print("❌ Monday update failed:", response.text)

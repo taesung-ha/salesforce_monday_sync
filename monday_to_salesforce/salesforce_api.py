@@ -94,7 +94,11 @@ def create_salesforce_lead_from_monday(data: dict):
     response = requests.post(url, headers=headers, json=salesforce_payload)
 
     if response.status_code == 201:
-        return {"messages": "✅ Lead created successfully"}
+        result = response.json()
+        lead_id = result.get('id', '')
+        print (f"✅ Lead created successfully: {lead_id}")
+        return lead_id
+
     else:
         return {
             "message": "❌ Failed to create lead",
