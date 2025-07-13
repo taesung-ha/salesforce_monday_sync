@@ -5,8 +5,6 @@ from config import MONDAY_TOKEN
 
 MONDAY_API_URL = "https://api.monday.com/v2"
 
-import json
-
 def transform_monday_item(item):
     column_dict = {}
     for cv in item['column_values']:
@@ -112,7 +110,7 @@ def update_monday_column(item_id: str, board_id: str, column_id: str, value: str
         "board_id": board_id,            # ⬅ 추가
         "item_id": str(item_id),         # ⬅ Int가 아닌 str(ID type)
         "column_id": column_id,
-        "value": json.dumps({"text": value})
+        "value": json.dumps(value)
     }
 
     headers = {
@@ -129,4 +127,4 @@ def update_monday_column(item_id: str, board_id: str, column_id: str, value: str
     if not response.ok:
         print("❌ Monday update failed:", response.text)
     else:
-        print(f"✅ Column {column_id} updated successfully for item {item_id} on board {board_id}")
+        print(f"✅ Column {column_id} updated {value} successfully for item {item_id} on board {board_id}")
