@@ -56,7 +56,7 @@ async def monday_webhook(req: Request):
             lead_id = create_salesforce_lead_from_monday(item_data)
             
             if isinstance(lead_id, str) and lead_id.startswith("00Q"):
-                update_monday_column(item_id=item_id, column_id='text_mkryhch5', value=lead_id)
+                update_monday_column(item_id=item_id, board_id='9378000505', column_id='text_mkryhch5', value=lead_id)
                 db.add(WebhookLog(**log_data, status='success'))
             else:
                 db.add(WebhookLog(**log_data, status='failed', error_message=str(lead_id)))

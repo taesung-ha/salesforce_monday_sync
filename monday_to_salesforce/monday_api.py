@@ -100,16 +100,17 @@ def get_monday_item_details(item_id, board_id):
             break
     return {}
 
-def update_monday_column(item_id: str, column_id: str, value: str):
+def update_monday_column(item_id: str, board_id: str, column_id: str, value: str):
     query = """
-    mutation ($item_id: Int!, $column_id: String!, $value: JSON!) {
-      change_column_value(item_id: $item_id, column_id: $column_id, value: $value) {
+    mutation ($board_id: ID!, $item_id: ID!, $column_id: String!, $value: JSON!) {
+      change_column_value(board_id: $board_id, item_id: $item_id, column_id: $column_id, value: $value) {
         id
       }
     }
     """
     variables = {
-        "item_id": int(item_id),
+        "board_id": board_id,            # ⬅ 추가
+        "item_id": str(item_id),         # ⬅ Int가 아닌 str(ID type)
         "column_id": column_id,
         "value": json.dumps({"text": value})
     }
