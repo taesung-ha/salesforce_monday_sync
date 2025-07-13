@@ -63,7 +63,6 @@ def create_salesforce_lead_from_monday(data: dict):
 
     # Salesforce로 보낼 payload 구성
     salesforce_payload = {
-        "Name": column_values.get('text_mkrykrc2', {}).get('value', ''),
         "Website": column_values.get('text_mks821t', {}).get('value', ''),
         "Industry": industry,
         "Other_Industry__c": other_industry,
