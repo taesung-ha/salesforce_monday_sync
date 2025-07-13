@@ -128,3 +128,5 @@ def update_monday_column(item_id: str, board_id: str, column_id: str, value: str
     
     if not response.ok:
         print("❌ Monday update failed:", response.text)
+    else:
+        print(f"✅ Column {column_id} updated successfully for item {item_id} on board {board_id}")
