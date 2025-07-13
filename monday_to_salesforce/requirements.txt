@@ -1,4 +1,6 @@
 fastapi
 uvicorn
+sqlalchemy
+psycopq2-binary
 requests
 dotenv
