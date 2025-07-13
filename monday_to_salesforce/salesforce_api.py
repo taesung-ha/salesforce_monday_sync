@@ -18,14 +18,18 @@ def create_salesforce_lead_from_monday(data: dict):
         return {"messages": "Skipped: Not from MondayForm"}
 
     # Industry
+    industry = ''
+    other_industry = ''
     if column_values['color_mksfebkh']['label'] == 'Other':
-        industry = column_values.get('text_mksfswxm', {}).get('value', 'Other')
+        other_industry = column_values.get('text_mksfswxm', {}).get('value', 'Other')
     else:
         industry = column_values['color_mksfebkh']['label']
 
     # Sector
+    sector = ''
+    other_sector = ''
     if column_values['color_mksf6mtf']['label'] == 'Other':
-        sector = column_values.get('text_mksfjsre', {}).get('value', 'Other')
+        other_sector = column_values.get('text_mksfjsre', {}).get('value', 'Other')
     else:
         sector = column_values['color_mksf6mtf']['label']
 
@@ -62,7 +66,9 @@ def create_salesforce_lead_from_monday(data: dict):
         "Name": column_values.get('text_mkrykrc2', {}).get('value', ''),
         "Website": column_values.get('text_mks821t', {}).get('value', ''),
         "Industry": industry,
-        "Sector__c": sector, 
+        "Other_Industry__c": other_industry,
+        "Sector__c": sector,
+        "Other_Sector__c": other_sector,
         "FirstName": column_values.get('text_mkry13cw', {}).get('value', ''),
         "LastName": column_values.get('text_mkry1xy1', {}).get('value', ''),
         "Title": column_values.get('text_mksf27hv', {}).get('value', ''),
