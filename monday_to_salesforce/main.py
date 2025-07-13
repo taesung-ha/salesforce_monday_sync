@@ -44,12 +44,12 @@ async def monday_webhook(req: Request):
             lead_source = ''
 
         if lead_source != 'MondayForm':
-            return {"status": "⏩ Skipped: Not from MondayForm"}
+            return print({"status": "⏩ Skipped: Not from MondayForm"})
 
         result = create_salesforce_lead_from_monday(item_data)
-        return {"status": result} 
+        return print({"status": result})
 
-    return {"status": "⏩ Skipped: Not Qualified update"}
+    return print({"status": "⏩ Skipped: Not Qualified update"})
 
 
 '''
