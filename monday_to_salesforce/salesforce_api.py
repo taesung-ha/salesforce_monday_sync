@@ -97,7 +97,7 @@ def create_salesforce_lead_from_monday(data: dict):
         result = response.json()
         lead_id = result.get('id', '')
         print (f"✅ Lead created successfully: {lead_id}")
-        return lead_id
+        return str(lead_id)
 
     else:
         return {
