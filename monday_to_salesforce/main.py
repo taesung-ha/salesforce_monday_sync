@@ -18,6 +18,17 @@ async def monday_webhook(req: Request):
     column_id = event.get("columnId", "")
     new_value = event.get("value", {})
     status_label = new_value.get("label", {}).get("text", "")
+    '''
+    {'event': 
+    {'app': 'monday', 'type': 'update_column_value', 'triggerTime': '2025-07-12T09:48:32.792Z', 
+    'subscriptionId': 542173598, 'isRetry': False, 'userId': 75857771, 'originalTriggerUuid': None, 'boardId': 9378000505, 
+    'groupId': 'group_mkry9yes', 'pulseId': 9575061505, 'pulseName': 'Organization Name', 'columnId': 'color_mksj2adq', 
+    'columnType': 'color', 'columnTitle': 'Status', 'value': {'label': {'index': 4, 'text': 'Review New Lead', 
+    'style': {'color': '#9d50dd', 'border': '#9238af', 'var_name': 'purple'}, 'is_done': False}, 'post_id': None}, 
+    'previousValue': {'label': {'index': 1, 'text': 'Open - Not Contacted', 
+    'style': {'color': '#00c875', 'border': '#00b461', 'var_name': 'green-shadow'}, 'is_done': True}, 'post_id': None}, 
+    'changedAt': 1752313712.3719661, 'isTopGroup': True, 'triggerUuid': '2e3c2e4bc271f90f8032dd1a30ca6ef1'}}
+    '''
     
     if column_id == "color_mksj2adq" and status_label == "Qualified":
         item_id = event.get("pulseId", "")
@@ -61,17 +72,7 @@ async def monday_webhook(req: Request):
 'short_textzb4g11iz': {'value': 'MondayForm'}}, 'triggerUuid': 'c4d09d07a52de2707c7a0f40479f7f89'}}
 '''
 
-'''
-{'event': 
-{'app': 'monday', 'type': 'update_column_value', 'triggerTime': '2025-07-12T09:48:32.792Z', 
-'subscriptionId': 542173598, 'isRetry': False, 'userId': 75857771, 'originalTriggerUuid': None, 'boardId': 9378000505, 
-'groupId': 'group_mkry9yes', 'pulseId': 9575061505, 'pulseName': 'Organization Name', 'columnId': 'color_mksj2adq', 
-'columnType': 'color', 'columnTitle': 'Status', 'value': {'label': {'index': 4, 'text': 'Review New Lead', 
-'style': {'color': '#9d50dd', 'border': '#9238af', 'var_name': 'purple'}, 'is_done': False}, 'post_id': None}, 
-'previousValue': {'label': {'index': 1, 'text': 'Open - Not Contacted', 
-'style': {'color': '#00c875', 'border': '#00b461', 'var_name': 'green-shadow'}, 'is_done': True}, 'post_id': None}, 
-'changedAt': 1752313712.3719661, 'isTopGroup': True, 'triggerUuid': '2e3c2e4bc271f90f8032dd1a30ca6ef1'}}
-'''
+
 
 '''
 item_data: 
