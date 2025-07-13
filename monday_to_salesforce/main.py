@@ -19,24 +19,27 @@ async def monday_webhook(req: Request):
     new_value = event.get("value", {})
     status_label = new_value.get("label", {}).get("text", "")
     '''
+    Received from Monday: 
     {'event': 
-    {'app': 'monday', 'type': 'update_column_value', 'triggerTime': '2025-07-12T09:48:32.792Z', 
-    'subscriptionId': 542173598, 'isRetry': False, 'userId': 75857771, 'originalTriggerUuid': None, 'boardId': 9378000505, 
-    'groupId': 'group_mkry9yes', 'pulseId': 9575061505, 'pulseName': 'Organization Name', 'columnId': 'color_mksj2adq', 
-    'columnType': 'color', 'columnTitle': 'Status', 'value': {'label': {'index': 4, 'text': 'Review New Lead', 
-    'style': {'color': '#9d50dd', 'border': '#9238af', 'var_name': 'purple'}, 'is_done': False}, 'post_id': None}, 
-    'previousValue': {'label': {'index': 1, 'text': 'Open - Not Contacted', 
-    'style': {'color': '#00c875', 'border': '#00b461', 'var_name': 'green-shadow'}, 'is_done': True}, 'post_id': None}, 
-    'changedAt': 1752313712.3719661, 'isTopGroup': True, 'triggerUuid': '2e3c2e4bc271f90f8032dd1a30ca6ef1'}}
+    {'app': 'monday', 'type': 'update_column_value', 'triggerTime': '2025-07-13T01:26:52.397Z', 
+    'subscriptionId': 542173598, 'isRetry': False, 'userId': 75857771, 'originalTriggerUuid': None, 
+    'boardId': 9378000505, 'groupId': 'group_mkry9yes', 'pulseId': 9575061505, 
+    'pulseName': 'Organization Name', 'columnId': 'color_mksj2adq', 'columnType': 'color', 
+    'columnTitle': 'Status', 
+    'value': 
+    {'label': {'index': 7, 'text': 'Qualified', 'style': {'color': '#579bfc', 'border': '#4387e8', 'var_name': 'bright-blue'}, 
+    'is_done': False}, 'post_id': None}, 
+    'previousValue': {'label': {'index': 5, 'text': None, 
+    'style': {'color': '#c4c4c4', 'border': '#b0b0b0', 'var_name': 'grey'}, 'is_done': False}, 'post_id': None}, 
+    'changedAt': 1752370012.0153196, 'isTopGroup': True, 'triggerUuid': 'e87d900d930bec8f6dfb70deba1f5b5c'}}
     '''
-    
     if column_id == "color_mksj2adq" and status_label == "Qualified":
         item_id = event.get("pulseId", "")
         board_id = event.get("boardId", "")
         
         item_data = get_monday_item_details(item_id, board_id)
-        
-        lead_source = item_data.get('short_textzb4g11iz')
+
+        lead_source = item_data['event']['columnValues'].get('short_textzb4g11iz', {}).get('value', '')
         if not isinstance(lead_source, str):
             lead_source = ''
 
@@ -100,17 +103,4 @@ item_data:
 'text_mkry427s': {}, 'text_mkryr3pj': {}, 'text_mkry53df': {}, 'text_mkryp43z': {}, 
 'text_mkry581q': {}, 'date_mkspa7vk': {'date': '2025-07-11', 'changed_at': '2025-07-12T06:08:27.423Z'}}
 '''
-'''
-이 에러의 핵심은 여기입니다:
 
-vbnet
-복사
-편집
-KeyError: 'event'
-즉, 이 줄에서:
-
-python
-복사
-편집
-organization_name = data['event']['pulseName']
-'''
