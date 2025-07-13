@@ -17,7 +17,9 @@ async def monday_webhook(req: Request):
     event = data.get("event", {})
     column_id = event.get("columnId", "")
     new_value = event.get("value", {})
-    status_label = new_value.get("label", {}).get("text", "")
+    status_label = ""
+    if new_value and isinstance(new_value, dict):
+        status_label = new_value.get("label", {}).get("text", "")
     '''
     Received from Monday: 
     {'event': 
