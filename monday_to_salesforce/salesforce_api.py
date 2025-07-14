@@ -22,24 +22,25 @@ def create_salesforce_lead_from_monday(data: dict):
     industry = ''
     other_industry = ''
     if column_values.get('color_mksfebkh', {}).get('label') == 'Other':
-        other_industry = column_values.get('text_mksfswxm', {}).get('value', 'Other')
+        other_industry = column_values.get('text_mksfswxm', {}).get('value', 'Other').strip()
     else:
-        industry = column_values.get('color_mksfebkh', {}).get('label')
+        industry = column_values.get('color_mksfebkh', {}).get('label').strip()
 
     # Sector
     sector = ''
     other_sector = ''
     if column_values.get('color_mksf6mtf', {}).get('label') == 'Other':
-        other_sector = column_values.get('text_mksfjsre', {}).get('value', 'Other')
+        other_sector = column_values.get('text_mksfjsre', {}).get('value', 'Other').strip()
     else:
-        sector = column_values.get('color_mksf6mtf', {}).get('label')
+        sector = column_values.get('color_mksf6mtf', {}).get('label').strip()
 
     # WhatAreYourNeeds (dropdown_mksfyfqp) -> Capacity_Building_Needs__c
     other_what_are_your_needs = ''
     what_are_your_needs = ''
     a_labels = column_values.get('dropdown_mksfyfqp', {}).get('labels', [])
+    a_labels = [label.strip() for label in a_labels]
     if 'Other' in a_labels:
-        other_what_are_your_needs = column_values.get('long_text_mksfzsqt', {}).get('value', 'Other')
+        other_what_are_your_needs = column_values.get('long_text_mksfzsqt', {}).get('value', 'Other').strip()
     else:
         what_are_your_needs = ";".join(a_labels)
 
@@ -47,27 +48,30 @@ def create_salesforce_lead_from_monday(data: dict):
     other_which_covered_populations = ''
     which_covered_populations = ''
     b_labels = column_values.get('dropdown_mksfe98g', {}).get('labels', [])
+    b_labels = [label.strip() for label in b_labels]
     if 'Other' in b_labels:
-        other_which_covered_populations = column_values.get('long_text_mksf3snn', {}).get('value', 'Other')
+        other_which_covered_populations = column_values.get('long_text_mksf3snn', {}).get('value', 'Other').strip()
     else:
         which_covered_populations = ";".join(b_labels)
 
     # WhatisYourEstimatedBudget (color_mksf6q5r)
-    what_is_your_estimated_budget = column_values.get('color_mksf6q5r', {}).get('label', 'Other')
+    what_is_your_estimated_budget = column_values.get('color_mksf6q5r', {}).get('label', 'Other').strip()
 
     # Funding Type (dropdown_mksf2z7p)
     other_funding_type = ''
     funding_type = ''
     c_labels = column_values.get('dropdown_mksf2z7p', {}).get('labels', [])
+    c_labels = [label.strip() for label in c_labels]
     if 'Other' in c_labels:
-        other_funding_type = column_values.get('text_mksfsgjw', {}).get('value', 'Other')
+        other_funding_type = column_values.get('text_mksfsgjw', {}).get('value', 'Other').strip()
     else:
         funding_type = ";".join(c_labels)
 
     # WhereDidYouHear (dropdown_mksf657r) <- 여기부터
     d_labels = column_values.get('dropdown_mksf657r', {}).get('labels', [])
+    d_labels = [label.strip() for label in d_labels]
     if 'Other' in d_labels:
-        where_did_you_hear = column_values.get('text_mksfjtqd', {}).get('value', 'Other')
+        where_did_you_hear = column_values.get('text_mksfjtqd', {}).get('value', 'Other').strip()
     else:
         where_did_you_hear = ";".join(d_labels)
 
