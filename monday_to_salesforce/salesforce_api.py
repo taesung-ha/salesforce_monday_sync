@@ -2,14 +2,15 @@
 import requests
 from salesforce import get_salesforce_access_token
 from config import SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD
-
-ACCESS_TOKEN, INSTANCE_URL = get_salesforce_access_token(SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD)
-API_VERSION = "v59.0"
-
 import json
 
+API_VERSION = "v59.0"
 
 def create_salesforce_lead_from_monday(data: dict):
+    ACCESS_TOKEN, INSTANCE_URL = get_salesforce_access_token(
+        SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD
+    )
+
     organization_name = data['event']['pulseName'] #Company
     column_values = data['event']['columnValues']
 
@@ -20,18 +21,18 @@ def create_salesforce_lead_from_monday(data: dict):
     # Industry
     industry = ''
     other_industry = ''
-    if column_values['color_mksfebkh']['label'] == 'Other':
+    if column_values.get('color_mksfebkh', {}).get('label') == 'Other':
         other_industry = column_values.get('text_mksfswxm', {}).get('value', 'Other')
     else:
-        industry = column_values['color_mksfebkh']['label']
+        industry = column_values.get('color_mksfebkh', {}).get('label')
 
     # Sector
     sector = ''
     other_sector = ''
-    if column_values['color_mksf6mtf']['label'] == 'Other':
+    if column_values.get('color_mksf6mtf', {}).get('label') == 'Other':
         other_sector = column_values.get('text_mksfjsre', {}).get('value', 'Other')
     else:
-        sector = column_values['color_mksf6mtf']['label']
+        sector = column_values.get('color_mksf6mtf', {}).get('label')
 
     # WhatAreYourNeeds (dropdown_mksfyfqp) -> Capacity_Building_Needs__c
     other_what_are_your_needs = ''
@@ -113,6 +114,9 @@ def create_salesforce_lead_from_monday(data: dict):
         return str(lead_id)
 
     else:
+        print("❌ Salesforce lead creation failed:")
+        print("Payload:", json.dumps(salesforce_payload, indent=2))
+        print("Response:", response.text)
         return {
             "message": "❌ Failed to create lead",
             "status_code": response.status_code,
