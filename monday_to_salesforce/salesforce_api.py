@@ -77,6 +77,7 @@ def create_salesforce_lead_from_monday(data: dict):
 
     # Salesforce로 보낼 payload 구성
     salesforce_payload = {
+        "RecordTypeId": "0123p000000EILJAA4",
         "Company": organization_name,
         "LeadSource": column_values.get('short_textzb4g11iz', {}).get('value', ''),
         "Email": column_values.get('text_mkrymwp3', {}).get('value', ''),

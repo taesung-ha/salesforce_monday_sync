@@ -9,7 +9,8 @@ DROPDOWN_VALUE_MAP = {
 "Needs assessment": "Strategic plan for Digital Inclusion in your community",
 "Referred by a CTN Volunteer": "Referred by a digitalLIFT Partner Organization",
 "Referred by a CTN partner organization": "Referred by a digitalLIFT volunteer",
-"Other Internet source": "Other Social Media"
+"Other Internet source": "Other Social Media",
+"Individuals with a language barrier, including individuals who are English learners, and/ or have low levels of literacy": "Individuals with a language barrier (including individuals who are English learners and/ or have low levels of literacy)"
 }
 
 def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
