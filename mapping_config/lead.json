@@ -1,7 +1,7 @@
 {
     "board_id": "9378000505",
     "salesforce_id_column_id": "text_mkryhch5",
-    "salesforce_select_fields": "Id, Name, LastName, Website, Industry, FirstName, ConvertedAccountId, ConvertedContactId, RecordTypeId, ConvertedOpportunityId, CreatedDate, LastModifiedDate, Company, Street, City, State, PostalCode, Country, StateCode, CountryCode, Address, Phone, MobilePhone, Email, Description, Status, OwnerId, IsConverted, CreatedById, LastModifiedById, Role__c, Record_Type_ID_Text__c, LeadSource, Sector__c",
+    "salesforce_select_fields": "Id, Name, Title, Main_Challenges__c, Funding__c, LastName, Website, Industry, FirstName, ConvertedAccountId, ConvertedContactId, RecordTypeId, ConvertedOpportunityId, CreatedDate, LastModifiedDate, Company, Street, City, State, PostalCode, Country, StateCode, CountryCode, Address, Phone, MobilePhone, Email, Description, Status, OwnerId, IsConverted, CreatedById, LastModifiedById, Role__c, Record_Type_ID_Text__c, LeadSource, Sector__c, Capacity_Building_Needs__c, Covered_Population__c, Where_did_you_hear_about_CTN__c",
     "salesforce_object": "Lead",
     "salesforce_condition": "Role__c = 'Partner' AND CreatedDate >= 2024-07-01T00:00:00Z",
     "field_mapping": {
@@ -33,6 +33,12 @@
         "color_mksf6mtf": "Sector__c",
         "text_mkryxqtf": "IsConverted",
         "text_mkryf4cd": "Role__c",
-        "short_textzb4g11iz": "LeadSource"
+        "short_textzb4g11iz": "LeadSource",
+        "text_mksf27hv": "Title",
+        "dropdown_mksf2z7p": "Funding__c",
+        "long_text_mksfhq35": "Main_Challenges__c",
+        "dropdown_mksfe98g": "Covered_Population__c",
+        "dropdown_mksfyfqp": "Capacity_Building_Needs__c",
+        "dropdown_mksf657r": "Where_did_you_hear_about_CTN__c"
     }
 }

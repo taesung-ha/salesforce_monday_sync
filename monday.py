@@ -1,6 +1,16 @@
 import json
 
 MONDAY_API_URL = "https://api.monday.com/v2"
+DROPDOWN_VALUE_MAP = {
+"Curriculum": "Curriculum Development",
+"Train the trainer": "Digital Navigator and/or Instructor Training",
+"ACP enrollment support": "Low-cost Internet Subscription Enrollment Support",
+"Digital Navigator support": "Ongoing Virtual Tech Advice For Your Community",
+"Needs assessment": "Strategic plan for Digital Inclusion in your community",
+"Referred by a CTN Volunteer": "Referred by a digitalLIFT Partner Organization",
+"Referred by a CTN partner organization": "Referred by a digitalLIFT volunteer",
+"Other Internet source": "Other Social Media"
+}
 
 def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
     import requests
@@ -176,7 +186,19 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
             col_type = monday_items[salesforce_id]["column_values"].get(monday_col_id, {}).get("type", "text") #현재 Stesstee의 컬럼 타입을 가져옴
         else:
             col_type = "text"
-        column_values[monday_col_id] = format_value_for_column(value, col_type)
+            
+        if col_type == "dropdown":
+            if isinstance(value, str):
+                split_labels = [v.strip() for v in value.split(';')]
+                split_labels = [DROPDOWN_VALUE_MAP.get(v.strip(), v.strip()) for v in split_labels]
+                column_values[monday_col_id] = {"labels": split_labels}
+            elif isinstance(value, list):
+                mapped_list = [DROPDOWN_VALUE_MAP.get(v.strip(), v.strip()) for v in value]
+                column_values[monday_col_id] = {"labels": mapped_list}
+            else:
+                column_values[monday_col_id] = {"labels": []}
+        else:
+            column_values[monday_col_id] = format_value_for_column(value, col_type)
         #column_values = {monday_col_id: {"label": value}}
         #GraphQL 형식 맞춰서 Salesforce로부터 받은 data를 monday.com의 컬럼 type에 맞게 Monday.com으로 밀어넣으려고. 
         
@@ -218,7 +240,6 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
             updated[k] = v
             change_log.append(f"    - {k}: {current_val} → {v}")
 
-            
     if updated:
         query = '''
         mutation ($itemId: ID!, $boardId: ID!, $columnValues: JSON!) {
