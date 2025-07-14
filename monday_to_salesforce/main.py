@@ -8,6 +8,10 @@ import json
 
 app = FastAPI()
 
+@app.get("/")
+def root():
+    return {"status": "ok"}
+
 @app.post('/webhook')
 async def monday_webhook(req: Request):
     try:
