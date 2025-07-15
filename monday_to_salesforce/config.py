@@ -1,6 +1,21 @@
 # config.py
 #%%
 import os
+import urllib.parse as urlparse
+
+urlparse.uses_netloc.append("postgres")
+url = urlparse.urlparse(os.getenv("DATABASE_URL"))
+
+DB_CONFIG = {
+    "dbname": url.path[1:],
+    "user": url.username,
+    "password": url.password,
+    "host": url.hostname,
+    "port": url.port,
+}
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 def load_env():
     try:
@@ -87,3 +102,4 @@ CONNECTIONS = [
         "connect_col": "board_relation_mks98dnn",  # CONTACT_CONNECT_COL_ID_ACCOUNT
     },
 ]
+
