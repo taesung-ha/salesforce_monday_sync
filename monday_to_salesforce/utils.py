@@ -13,11 +13,10 @@ def create_log_table():
         id SERIAL PRIMARY KEY,
         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         event_type VARCHAR(50),
-        board_id INTEGER,
-        item_id INTEGER,
+        board_id VARCHAR(50),
+        item_id VARCHAR(50),
         column_id VARCHAR(50),
         status VARCHAR(50),
-        message TEXT,
         request_payload JSONB,
         response_payload JSONB
     );
@@ -31,13 +30,14 @@ def log_to_db(event_type, board_id, item_id, column_id, status, message=None, re
         conn = psycopg2.connect(**DB_CONFIG)
         cur = conn.cursor()
         cur.execute("""
-        INSERT INTO webhook_logs (event_type, board_id, item_id, column_id, status, message, request_payload, response_payload)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO webhook_logs (event_type, board_id, item_id, column_id, status, request_payload, response_payload)
+        VALUES (%s, %s, %s, %s, %s, %s, %s);
     """, (event_type, board_id, item_id, column_id, status,
-        message if message else '', Json(request_data), Json(response_data)))
+        Json(request_data), Json(response_data)))
         conn.commit()
         cur.close()
         conn.close()
+        print("Log entry created successfully.")
     except Exception as e:
         print(f"Logging failed: {e}")
 

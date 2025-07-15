@@ -11,7 +11,11 @@ app = FastAPI()
 
 @app.on_event("startup")
 def setup():
-    create_log_table()
+    try:
+        create_log_table()
+        print("Log table created successfully.")
+    except Exception as e:
+        print(f"Error during setup: {e}")
 
 @app.get("/")
 def root():
@@ -43,9 +47,10 @@ async def monday_webhook(req: Request):
 
                 if isinstance(lead_id, str) and lead_id.startswith("00Q"): #Monday.com에 Salesforce Lead ID 업데이트
                     update_monday_column(item_id=item_id, board_id=board_id, column_id='text_mkryhch5', value=lead_id)
+                    print(response_data)
                     log_to_db(event_type, board_id, item_id, column_id, status="success", response_data=response_data)
                 else:
-                    log_to_db(event_type, board_id, item_id, column_id, status="failed", message=lead_id, response_data=response_data)
+                    log_to_db(event_type, board_id, item_id, column_id, status="failed", response_data=response_data)
                     send_telegram_alert(f"❌ Failed to create lead: {item_id}")
                     return JSONResponse(content={"status": f"❌ Failed to create lead: {lead_id}"})
 
