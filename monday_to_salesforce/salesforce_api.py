@@ -104,7 +104,7 @@ def create_salesforce_lead_from_monday(data: dict):
         "RecordTypeId": "0123p000000EILJAA4",
         "Company": organization_name,
         "LeadSource": column_values.get('short_textzb4g11iz', {}).get('value', ''),
-        "Email": column_values.get('text_mkrymwp3', {}).get('value', ''),
+        "Email": column_values.get('email_mksx3vtp', {}).get('value', ''),
         "Phone": column_values.get('text_mkryhzq7', {}).get('value', ''),
         "FirstName": column_values.get('text_mkry13cw', {}).get('value', ''),
         "LastName": column_values.get('text_mkry1xy1', {}).get('value', ''),
