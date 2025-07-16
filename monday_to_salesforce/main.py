@@ -131,7 +131,7 @@ async def monday_webhook(req: Request):
                 elif column_id == 'text_mksfsgjw': # 'Other Funding Type'
                     fields = {"Other_Funding__c": column_values.get('text_mksfsgjw', {}).get('value', '')}
                 elif column_id == 'long_text_mksfhq35': # 'Main Challenges' 컬럼 업데이트
-                    fields = {"MainChallenges__c": column_values.get('long_text_mksfhq35', {}).get('value', '')}
+                    fields = {"Main_Challenges__c": column_values.get('long_text_mksfhq35', {}).get('value', '')}
 
                 if fields:
                     update_salesforce_lead(lead_id, fields)
