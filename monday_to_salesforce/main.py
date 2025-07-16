@@ -9,6 +9,10 @@ import json
 
 app = FastAPI()
 
+@app.head("/")
+def root():
+    return {"status": "ok"}
+
 @app.on_event("startup")
 def setup():
     try:
