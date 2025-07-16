@@ -37,7 +37,7 @@ async def monday_webhook(req: Request):
         board_id = event.get('boardId', '')
         column_values = event.get('columnValues', {})
         
-        log_to_db(event_type, board_id, item_id, column_id, status="received", request_data=data)
+        log_to_db(event_type, board_id, item_id, column_id, status="received", response_data=data)
 
         if event_type == "create_pulse": #create_pulse 이벤트 처리
             if column_values.get('short_textzb4g11iz', {}).get('value', '') == 'MondayForm':
@@ -58,6 +58,10 @@ async def monday_webhook(req: Request):
                 print({"status": "⏩ Skipped: Not from MondayForm"})
                 return JSONResponse(content={"status": "⏩ Skipped: Not from MondayForm"})
 
+        elif event_type == "update_column_value": #update_column_value 이벤트 처리
+            item_data = get_monday_item_details(item_id, board_id)
+            lead_id, response_data = create_salesforce_lead_from_monday(item_data)
+            
         return JSONResponse(content={"status": "✅ Webhook received but no action taken"})
 
     except Exception as e:

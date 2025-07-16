@@ -157,3 +157,23 @@ def create_salesforce_lead_from_monday(data: dict):
             "status_code": response.status_code,
             "response": response.text
         }, response_data
+
+def update_salesforce_lead(lead_id: str, fields):
+    ACCESS_TOKEN, INSTANCE_URL = get_salesforce_access_token(
+        SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD
+    )
+    
+    url = f"{INSTANCE_URL}/services/data/{API_VERSION}/sobjects/Lead/{lead_id}"
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    response = requests.patch(url, headers=headers, json=fields)
+    
+    if response.status_code == 204:
+        return {'status': 'success', 'message': f'Lead {lead_id} updated successfully'}
+    else:
+        try:
+            return response.json()
+        except ValueError:
+            return {"error": response.text}
