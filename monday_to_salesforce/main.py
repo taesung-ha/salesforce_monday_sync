@@ -113,7 +113,7 @@ async def monday_webhook(req: Request):
                     b_labels = ';'.join(b_labels)
                     fields = {"Covered_Population__c": b_labels}
                 elif column_id == 'long_text_mksf3snn': # 'Other Covered Populations' 컬럼 업데이트
-                    fields = {"OtherCoveredPopulations__c": column_values.get('long_text_mksf3snn', {}).get('text', '')}
+                    fields = {"OtherCoveredPopulations__c": column_values.get('long_text_mksf3snn', {}).get('value', '')}
                 elif column_id == 'dropdown_mksf657r': # 'Where Did You Hear About CTN' 컬럼 업데이트
                     d_labels = column_values.get('dropdown_mksf657r', {}).get('labels', [])
                     d_labels = [label.strip() for label in d_labels]
@@ -141,7 +141,7 @@ async def monday_webhook(req: Request):
                 
                 if fields:
                     update_salesforce_lead(lead_id, fields)
-                    print(f"Updated Salesforce Lead {lead_id} with fields: {fields}")
+                    print(f"✅ Updated Salesforce Lead {lead_id} with fields: {fields} successfully")
                     log_to_db(event_type, board_id, item_id, column_id, status="success", response_data={"lead_id": lead_id, "fields": fields})
                 else:
                     log_to_db(event_type, board_id, item_id, column_id, status="skipped", response_data={"message": "No fields to update"})
