@@ -70,8 +70,8 @@ async def monday_webhook(req: Request):
                     fields = {"LastName": column_values.get('text_mkry1xy1', {}).get('value', '')}
                 elif column_id == 'color_mksj2adq': # 'Status' 컬럼 업데이트
                     fields = {"Status": column_values.get('color_mksj2adq', {}).get('value', '')}
-                elif column_id == 'text_mkrymwp3': # 'Email' 컬럼 업데이트
-                    fields = {"Email": column_values.get('text_mkrymwp3', {}).get('value', '')}
+                elif column_id == 'email_mksx3vtp': # 'Email' 컬럼 업데이트
+                    fields = {"Email": column_values.get('email_mksx3vtp', {}).get('value', '')}
                 elif column_id == 'short_textzb4g11iz': # 'Lead Source' 컬럼 업데이트
                     fields = {"LeadSource": column_values.get('short_textzb4g11iz', {}).get('value', '')}
                 elif column_id == 'text_mkryhzq7': # 'Phone' 컬럼 업데이트
