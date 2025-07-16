@@ -106,7 +106,7 @@ async def monday_webhook(req: Request):
                     a_labels = ';'.join(a_labels)
                     fields = {"Capacity_Building_Needs__c": a_labels}
                 elif column_id == 'long_text_mksfzsqt': # 'Other Capacity Building Needs' 컬럼 업데이트
-                    fields = {"Other_Capacity_Building_Needs__c": column_values.get('long_text_mksfzsqt', {}).get('text', '')}
+                    fields = {"Other_Capacity_Building_Needs__c": column_values.get('long_text_mksfzsqt', {}).get('value', '')}
                 elif column_id == 'dropdown_mksfe98g': # 'Covered Population' 컬럼 업데이트
                     b_labels = column_values.get('dropdown_mksfe98g', {}).get('labels', [])
                     b_labels = [label.strip() for label in b_labels]
