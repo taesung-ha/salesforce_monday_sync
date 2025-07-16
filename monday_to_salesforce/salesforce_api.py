@@ -25,7 +25,7 @@ def create_salesforce_lead_from_monday(data: dict):
         industry = 'Other'
         other_industry = column_values.get('text_mksfswxm', {}).get('value', 'Other').strip()
     else:
-        industry = column_values.get('color_mksfebkh', {}).get('label').strip()
+        industry = (column_values.get('color_mksfebkh', {}).get('label') or '').strip()
 
     # Sector
     sector = ''
@@ -35,6 +35,12 @@ def create_salesforce_lead_from_monday(data: dict):
         other_sector = column_values.get('text_mksfjsre', {}).get('value', 'Other').strip()
     else:
         sector = column_values.get('color_mksf6mtf', {}).get('label').strip()
+    
+    # State
+    state = ''
+    if column_values.get('dropdown_mkstb9d4', {}).get('labels', []):
+        labels = column_values.get('dropdown_mkstb9d4', {}).get('labels', [])
+        state = labels[0].strip() if labels else ''
 
     # WhatAreYourNeeds (dropdown_mksfyfqp) -> Capacity_Building_Needs__c
     what_are_your_needs = ''
@@ -115,7 +121,7 @@ def create_salesforce_lead_from_monday(data: dict):
         "Other_Sector__c": other_sector,
         "Title": column_values.get('text_mksf27hv', {}).get('value', ''),
         "City": column_values.get('text_mkrym6fa', {}).get('value', ''),
-        "State": column_values.get('text_mkryz0sr', {}).get('value', ''),
+        "State": state,
         "PostalCode": column_values.get('text_mkryrr5y', {}).get('value', ''),
         "Capacity_Building_Needs__c": what_are_your_needs,
         "Other_Capacity_Building_Needs__c": other_what_are_your_needs,
@@ -126,7 +132,7 @@ def create_salesforce_lead_from_monday(data: dict):
         "Other_Funding__c": other_funding_type,
         "Where_did_you_hear_about_CTN__c": where_did_you_hear,
         "OtherWhereDidYouHearAboutCTN__c": other_where_did_you_hear,
-        "MainChallenges__c": column_values.get('long_text_mksfhq35', {}).get('text', ''),
+        "MainChallenges__c": column_values.get('long_text_mksfhq35', {}).get('value', ''),
     }
 
     url = f"{INSTANCE_URL}/services/data/{API_VERSION}/sobjects/Lead"
