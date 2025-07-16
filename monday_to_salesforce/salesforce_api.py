@@ -132,7 +132,7 @@ def create_salesforce_lead_from_monday(data: dict):
         "Other_Funding__c": other_funding_type,
         "Where_did_you_hear_about_CTN__c": where_did_you_hear,
         "OtherWhereDidYouHearAboutCTN__c": other_where_did_you_hear,
-        "Main_Challenges__c	": column_values.get('long_text_mksfhq35', {}).get('value', ''),
+        "Main_Challenges__c": column_values.get('long_text_mksfhq35', {}).get('value', ''),
     }
 
     url = f"{INSTANCE_URL}/services/data/{API_VERSION}/sobjects/Lead"
