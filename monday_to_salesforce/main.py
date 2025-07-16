@@ -83,11 +83,11 @@ async def monday_webhook(req: Request):
                 elif column_id == 'text_mks821t': # 'Website' 컬럼 업데이트
                     fields = {"Website": column_values.get('text_mks821t', {}).get('value', '')}
                 elif column_id == 'color_mksfebkh': # 'Industry' 컬럼 업데이트
-                    fields = {"Industry": column_values.get('color_mksfebkh', {}).get('value', '')}
+                    fields = {"Industry": column_values.get('color_mksfebkh', {}).get('label', '')}
                 elif column_id == 'text_mksfswxm': # 'Industry (Please Specify)' 컬럼 업데이트
                     fields = {"Other_Industry__c": column_values.get('text_mksfswxm', {}).get('value', '')}
                 elif column_id == 'color_mksf6mtf': # 'Sector' 컬럼 업데이트
-                    fields = {"Sector__c": column_values.get('color_mksf6mtf', {}).get('value', '')}
+                    fields = {"Sector__c": column_values.get('color_mksf6mtf', {}).get('label', '')}
                 elif column_id == 'text_mksfjsre': # 'Sector (Please Specify)' 컬럼 업데이트
                     fields = {"Other_Sector__c": column_values.get('text_mksfjsre', {}).get('value', '')}
                 elif column_id == 'text_mksf27hv': # 'Title' 컬럼 업데이트
@@ -144,6 +144,19 @@ async def monday_webhook(req: Request):
                 else:
                     log_to_db(event_type, board_id, item_id, column_id, status="skipped", response_data={"message": "No fields to update"})
                     print(f"Skipped updating Salesforce Lead {lead_id} - no fields to update")
+                    
+        elif event_type == "update_name": #update_name 이벤트 처리
+            new_name = event.get('value', {}).get('name', '')
+            item_id = event.get('pulseId', '')
+            board_id = event.get('boardId', '')
+            
+            monday_item_details = get_monday_item_details(item_id, board_id)
+            lead_id = monday_item_details.get('event', {}).get('columnValues', {}).get('text_mkryhch5', {}).get('value', '')
+            if isinstance(lead_id, str) and lead_id.startswith("00Q"):
+                fields = {"Company": new_name}
+                update_salesforce_lead(lead_id, fields)
+                print(f"✅ Updated Salesforce Lead {lead_id} with company name: {new_name} successfully")
+                log_to_db(event_type, board_id, item_id, column_id, status="success", response_data={"lead_id": lead_id, "fields": fields})
             else:
                 log_to_db(event_type, board_id, item_id, column_id, status="skipped", response_data={"message": "No fields to update"})
                 print(f"Skipped updating Salesforce Lead {lead_id} - no fields to update")
