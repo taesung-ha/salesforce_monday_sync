@@ -68,7 +68,7 @@ def create_salesforce_lead_from_monday(data: dict):
 
     # WhatisYourEstimatedBudget (color_mksf6q5r)
     what_is_your_estimated_budget = column_values.get('color_mksf6q5r', {}).get('label', 'Other').strip()
-    
+
     # Funding Type (dropdown_mksf2z7p)
     funding_type = ''
     other_funding_type = ''
