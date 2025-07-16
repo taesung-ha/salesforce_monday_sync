@@ -60,6 +60,7 @@ async def monday_webhook(req: Request):
 
         elif event_type == "update_column_value": #update_column_value 이벤트 처리
             monday_item_details = get_monday_item_details(item_id, board_id)
+            column_values = monday_item_details.get('event', {}).get('columnValues', {})
             lead_id = monday_item_details.get('event', {}).get('columnValues', {}).get('text_mkryhch5', {}).get('value', '')
             if isinstance(lead_id, str) and lead_id.startswith("00Q"):
                 fields = {}
