@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./monday_to_salesforce",
+        "./monday_to_salesforce"
+    ]
+}

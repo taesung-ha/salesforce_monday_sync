@@ -6,6 +6,8 @@ import urllib.parse as urlparse
 urlparse.uses_netloc.append("postgres")
 url = urlparse.urlparse(os.getenv("DATABASE_URL"))
 
+SF_LEAD_PARTNER_RECORDTYPE_ID = "0123p000000EILJAA4"
+
 DB_CONFIG = {
     "dbname": url.path[1:],
     "user": url.username,
