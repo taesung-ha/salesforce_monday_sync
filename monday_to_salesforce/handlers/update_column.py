@@ -10,8 +10,8 @@ async def handle_update_column(event):
     
     item_data = get_monday_item_details(item_id, board_id)
     column_values = item_data.get("event", {}).get("columnValues", {})
-    lead_id = column_values.get('text_mkrych5', {}).get('value', '')
-    
+    lead_id = column_values.get('text_mkryhch5', {}).get('value', '')
+
     if not lead_id.startswith('00Q'):
         log_to_db("update_column_value", board_id, item_id, column_id, status="skipped", response_data={"msg": "Lead ID missing"})
         print("⏩ Skipped: No Salesforce Lead Id")
