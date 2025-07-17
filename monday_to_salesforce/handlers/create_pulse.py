@@ -17,9 +17,11 @@ async def handle_create_pulse(event):
     if lead_id and lead_id.startswith('00Q'):
         update_monday_column(item_id, board_id, 'text_mkrych5', lead_id)
         log_to_db("create_pulse", board_id, item_id, "", "success", response_data=response)
+        print(f"✅ Lead created successfully: {lead_id}")
         return {"messages": f"✅ Lead created successfully: {lead_id}"}
 
     else:
         send_telegram_alert(f"❌ Failed to create lead for item {item_id} on board {board_id}: {response}")
         log_to_db("create_pulse", board_id, item_id, "", "failed", response_data=response)
+        print(f"❌ Failed to create lead: {response}")
         return {"status": f"❌ Failed to create lead: {response}"}

@@ -14,6 +14,7 @@ async def handle_update_column(event):
     
     if not lead_id.startswith('00Q'):
         log_to_db("update_column_value", board_id, item_id, column_id, status="skipped", response_data={"msg": "Lead ID missing"})
+        print("⏩ Skipped: No Salesforce Lead Id")
         return {"status": "⏩ Skipped: No Salesforce Lead Id"}
     
     if column_id in COLUMN_MAPPING:
@@ -24,7 +25,9 @@ async def handle_update_column(event):
         if value:
             update_salesforce_lead(lead_id, {sf_field: value})
             log_to_db("update_column_value", board_id, item_id, column_id, status='success', response_data = {'lead_id': lead_id, 'field': sf_field, 'value': value})
+            print(f"✅ Updated {sf_field} for Lead {lead_id}")
             return {"status": f"✅ Updated {sf_field} for Lead {lead_id}"}
         
     log_to_db("update_column_value", board_id, item_id, column_id, status="skipped", response_data={"msg": "No mapping"})
+    print("⏩ Skipped: No mapping for column")
     return {"status": "⏩ Skipped: No mapping for column"}
