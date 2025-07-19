@@ -96,6 +96,7 @@ async def handle_create_pulse(event, entity_type):
 
     send_telegram_alert(f"❌ Failed to create {entity_type} for item {item_id}")
     log_to_db("create_pulse", board_id, item_id, "", "failed")
+    print(f"❌ Failed to create {entity_type} for item {item_id}")
     return {"status": f"❌ Failed to create {entity_type}"}
 
 
@@ -117,9 +118,12 @@ async def handle_update_name(event, entity_type):
             success = update_salesforce_record(config["object_name"], sf_id, {"Name": new_name})
         log_to_db("update_name", board_id, item_id, "", "success" if success else "failed",
                 response_data={"sf_id": sf_id, "Name": new_name})
-        return {"status": f"✅ Updated Name for {entity_type} {sf_id}"}
+        if success:
+            print(f"✅ Updated Name for {entity_type} {sf_id}")
+            return {"status": f"✅ Updated Name for {entity_type} {sf_id}"}
 
     log_to_db("update_name", board_id, item_id, "", "skipped", response_data={"msg": "No Salesforce ID"})
+    print(f"⏩ Skipped: No Salesforce ID for item {item_id} on board {board_id}")
     return {"status": "⏩ Skipped: No Salesforce ID"}
 
 '''
