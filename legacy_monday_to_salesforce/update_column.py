@@ -1,7 +1,8 @@
+#update_column.py
 from services.monday_service import get_monday_item_details
 from services.salesforce_service import update_salesforce_lead
 from services.log_service import log_to_db
-from utils.mappings import COLUMN_MAPPING
+from monday_to_salesforce_legacy.mappings import COLUMN_MAPPING
 
 async def handle_update_column(event):
     board_id = event.get('boardId')
