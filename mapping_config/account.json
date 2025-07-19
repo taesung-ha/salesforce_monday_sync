@@ -20,13 +20,6 @@
         "long_text_mksjv61h": "Description",
         "text_mkrysg57": "CreatedDate",
         "text_mkryg3c0": "LastModifiedDate",
-        "dropdown_mkt01cp2": "Capacity_Building_Needs__c",
-        "numeric_mksjw0yx": "npe01__LifetimeDonationHistory_Amount__c",
-        "numeric_mksjwbt1": "npe01__LifetimeDonationHistory_Number__c",
-        "numeric_mksj8p6p": "npo02__AverageAmount__c",
-        "numeric_mksjcb1n": "npo02__Best_Gift_Year_Total__c",
-        "numeric_mksj7agk": "npo02__LargestAmount__c",
-        "numeric_mksjj64m": "npo02__SmallestAmount__c",
-        "numeric_mksjaza0": "npo02__TotalOppAmount__c"
+        "dropdown_mkt01cp2": "Capacity_Building_Needs__c"
     }
 }

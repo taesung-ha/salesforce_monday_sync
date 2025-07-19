@@ -53,9 +53,46 @@ ENTITY_CONFIG = {
             "text_mkrynkny": ("Website", "value", identity),
             "color_mkstk7e5": ("Industry", "label", identity),
             "long_text_mksjv61h": ("Description", "value", identity),
-            "dropdown_mkt01cp2": ("Capacity_Building_Needs__c", "labels", join_labels),
-            
-        },
+            "dropdown_mkt01cp2": ("Capacity_Building_Needs__c", "labels", join_labels)
+        }
 
+    },
+    "Contact": {
+        "board": 9429890440,
+        "sf_id_column": "text_mks6ner3",
+        "object_name": "Contact",
+        "field_mapping": {
+            "text_mks61cq2": ("FirstName", "value", identity),
+            "text_mks67we5": ("LastName", "value", identity),
+            "text_mks6s3rq": ("Title", "value", identity),
+            "text_mks6h9j": ("Phone", "value", identity),
+            "long_text_mksjsbdg": ("Description", "value", identity),
+            "text_mks6hgvs": ("Veteran_Status__c", "value", identity),
+            "text_mks6g6mp": ("Disability_Status__c", "value", identity),
+            "dropdown_mksj5djx": ("npe01__Organization_Type__c", "labels", join_labels),
+            "text_mks69r6r": ("Birthdate", "value", identity),
+            "text_mks63b0a": ("MailingCity", "value", identity),
+            "text_mks6p9v": ("MailingStreet", "value", identity),
+            "dropdown_mkt0xrxe": ("MailingState", "labels", join_labels),
+            "text_mks6rkt1": ("MailingPostalCode", "value", identity),
+            "dropdown_mksjtsrc": ("npe01__Type_of_Account__c", "labels", join_labels),
+            "text_mks6nck4": ("npe01__WorkPhone__c", "value", identity),
+            "text_mks6bhk": ("npe01__Work_Address__c", "value", identity),
+            "text_mks67a8w": ("MobilePhone", "value", identity),
+            "text_mks6d5v1": ("LinkedIn__c", "value", identity),
+            "text_mks6c82k": ("Email", "value", identity),
+        }
+    },
+    "Opportunity": {
+        "board_id": 9378000036,
+        "sf_id_column": "text_mkry20c9",
+        "object_name": "Opportunity",
+        "field_mapping": {
+            "color_mksj6ap4": ("StageName", "label", identity),
+            "dropdown_mksjwx1c": ("Type", "labels", join_labels),
+            "long_text_mksjyg4z": ("Description", "value", identity),
+            "numeric_mksjdntv": ("Amount", "value", identity),
+            "text_mkryhgwb": ("CloseDate", "value", identity),
+        }
     }
 }
