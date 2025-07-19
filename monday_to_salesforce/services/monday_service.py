@@ -1,7 +1,7 @@
 #%%
 # monday_service.py
 import requests, json
-from config import MONDAY_TOKEN
+from config.config import MONDAY_TOKEN
 
 MONDAY_API_URL = "https://api.monday.com/v2"
 

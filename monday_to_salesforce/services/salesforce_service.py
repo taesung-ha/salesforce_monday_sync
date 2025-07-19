@@ -1,7 +1,6 @@
 #salesforce_service.py
 import requests
-import json
-from config import SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD
+from config.config import SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD
 from salesforce import get_salesforce_access_token
 
 API_VERSION = 'v59.0'
