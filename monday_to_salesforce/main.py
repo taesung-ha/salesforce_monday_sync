@@ -4,7 +4,6 @@ from fastapi.responses import JSONResponse
 from handlers.entity_handler import handle_update_column, handle_create_pulse, handle_update_name
 from config.entity_config import ENTITY_CONFIG
 
-
 app = FastAPI()
 
 @app.get("/")
