@@ -69,8 +69,13 @@ async def handle_create_pulse(event, entity_type):
     """
     # Salesforce 생성용 Payload 구성
     sf_payload = {}
+    
+    if entity_type == "Lead":
+        sf_payload['Company'] = item_data.get("event", {}).get("pulseName", "")
+    
     if config.get("record_type", ""):
         sf_payload["RecordTypeId"] = config["record_type"]
+    
         
     for col_id, (sf_field, value_key, transform_fn) in config["field_mapping"].items():
         raw_value = column_values.get(col_id, {}).get(value_key, "")
