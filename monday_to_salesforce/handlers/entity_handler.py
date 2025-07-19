@@ -44,8 +44,8 @@ async def handle_update_column(event, entity_type):
             log_to_db("update_column_value", board_id, item_id, column_id,
                       "success" if success else "failed",
                       response_data={"sf_id": sf_id, "field": sf_field, "value": value})
-            print(f"✅ Updated {sf_field} for {entity_type} {sf_id}")
-            return {"status": f"Updated {sf_field} for {entity_type} {sf_id}"}
+            print(f"✅ Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}")
+            return {"status": f"Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}"}
     
     log_to_db("update_column_value", board_id, item_id, column_id, "skipped",
               response_data={"msg": f"No mapping for column {column_id}"})
