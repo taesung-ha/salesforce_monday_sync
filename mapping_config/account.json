@@ -1,7 +1,7 @@
 {
     "board_id": "9378000326",
     "salesforce_id_column_id": "text_mkrykpx4",
-    "salesforce_select_fields": "Name, Id, Type, RecordTypeId, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, BillingStateCode, Phone, Website, Industry, Description, OwnerId, CreatedDate, LastModifiedDate, npe01__SYSTEM_AccountType__c, Capacity_Building_Needs__c, npe01__LifetimeDonationHistory_Amount__c, npe01__LifetimeDonationHistory_Number__c, npo02__AverageAmount__c, npo02__Best_Gift_Year_Total__c, npo02__LargestAmount__c, npo02__SmallestAmount__c, npo02__TotalOppAmount__c",
+    "salesforce_select_fields": "Name, Id, Type, RecordTypeId, BillingStreet, BillingCity, BillingState, BillingPostalCode, BillingCountry, BillingStateCode, Phone, Website, Industry, Description, OwnerId, CreatedDate, LastModifiedDate, Capacity_Building_Needs__c, npe01__LifetimeDonationHistory_Amount__c, npe01__LifetimeDonationHistory_Number__c, npo02__AverageAmount__c, npo02__Best_Gift_Year_Total__c, npo02__LargestAmount__c, npo02__SmallestAmount__c, npo02__TotalOppAmount__c",
     "salesforce_object": "Account",
     "salesforce_condition": "Id in (SELECT AccountId FROM Opportunity WHERE RecordTypeId = '0123p000000EILEAA4')",
     "salesforce_condition2": "Id in (SELECT ConvertedAccountId FROM Lead WHERE Role__c ='Partner' AND CreatedDate >= 2024-07-01T00:00:00Z)",
@@ -20,8 +20,7 @@
         "long_text_mksjv61h": "Description",
         "text_mkrysg57": "CreatedDate",
         "text_mkryg3c0": "LastModifiedDate",
-        "text_mkry3shz": "npe01__SYSTEM_AccountType__c",
-        "text_mkrywebb": "Capacity_Building_Needs__c",
+        "dropdown_mkt01cp2": "Capacity_Building_Needs__c",
         "numeric_mksjw0yx": "npe01__LifetimeDonationHistory_Amount__c",
         "numeric_mksjwbt1": "npe01__LifetimeDonationHistory_Number__c",
         "numeric_mksj8p6p": "npo02__AverageAmount__c",

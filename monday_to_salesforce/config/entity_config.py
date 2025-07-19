@@ -35,5 +35,27 @@ ENTITY_CONFIG = {
             "long_text_mksfhq35": ("Main_Challenges__c", "value", identity),
         }
     },
+    
+    "Account": {
+        "board_id": 9378000326,
+        "sf_id_column": "text_mkrykpx4",  # Salesforce Account
+        "object_name": "Account",
+        "field_mapping": {
+            "text_mkrykpx4": ("Id", "value", identity),
+            "dropdown_mksjv0b6": ("Type", "labels", join_labels),
+            "text_mkrycwt2": ("BillingStreet", "value", identity),
+            "text_mkry84sc": ("BillingCity", "value", identity),
+            "text_mkryw8sk": ("BillingState", "value", identity),
+            "text_mkry7mvg": ("BillingPostalCode", "value", identity),
+            "text_mkry5991": ("BillingCountry", "value", identity),
+            "text_mkrypgwa": ("BillingStateCode", "value", identity),
+            "text_mkryh3k": ("Phone", "value", identity),
+            "text_mkrynkny": ("Website", "value", identity),
+            "color_mkstk7e5": ("Industry", "label", identity),
+            "long_text_mksjv61h": ("Description", "value", identity),
+            "dropdown_mkt01cp2": ("Capacity_Building_Needs__c", "labels", join_labels),
+            
+        },
 
+    }
 }
