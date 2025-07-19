@@ -1,7 +1,7 @@
 #log_service.py 
 import psycopg2
 from psycopg2.extras import Json
-from config import DB_CONFIG, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
+from config.config import DB_CONFIG, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
 import requests
 
 def create_log_table():
