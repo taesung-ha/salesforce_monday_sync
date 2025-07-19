@@ -29,7 +29,9 @@ async def handle_update_column(event, entity_type):
     if not sf_id:
         log_to_db("update_column_value", board_id, item_id, column_id, "skipped",
                   response_data={"msg": "No Salesforce ID"})
-        return {"status": "Skipped: No Salesforce ID"}
+        
+        print(f"⏩ Skipped: No Salesforce ID for item {item_id} on board {board_id}")
+        return {"status": "⏩ Skipped: No Salesforce ID"}
 
     # 컬럼 매핑 확인
     if column_id in config["field_mapping"]:
@@ -44,8 +46,11 @@ async def handle_update_column(event, entity_type):
                       response_data={"sf_id": sf_id, "field": sf_field, "value": value})
             print(f"✅ Updated {sf_field} for {entity_type} {sf_id}")
             return {"status": f"Updated {sf_field} for {entity_type} {sf_id}"}
-
-    return {"status": "Skipped: No mapping for this column"}
+    
+    log_to_db("update_column_value", board_id, item_id, column_id, "skipped",
+              response_data={"msg": f"No mapping for column {column_id}"})
+    print(f"⏩ Skipped: No mapping for column {column_id} in {entity_type}")
+    return {"status": "⏩ Skipped: No mapping for this column"}
 
 
 async def handle_create_pulse(event, entity_type):
