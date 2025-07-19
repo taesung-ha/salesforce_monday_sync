@@ -58,7 +58,7 @@ ENTITY_CONFIG = {
 
     },
     "Contact": {
-        "board": 9429890440,
+        "board_id": 9429890440,
         "sf_id_column": "text_mks6ner3",
         "object_name": "Contact",
         "field_mapping": {
