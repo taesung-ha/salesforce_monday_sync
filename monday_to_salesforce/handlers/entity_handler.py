@@ -38,11 +38,11 @@ async def handle_update_column(event, entity_type):
     if column_id in config["field_mapping"]:
         sf_field, value_key, transform_fn = config["field_mapping"][column_id]
         col_data = column_values.get(column_id, {})
-        
-        raw_value = col_data.get(value_key, "")
+    
         if isinstance(col_data, (int, float)):
             value = col_data
         else:
+            raw_value = col_data.get(value_key, "")
             value = transform_fn(raw_value) if transform_fn else raw_value
 
         if value:
