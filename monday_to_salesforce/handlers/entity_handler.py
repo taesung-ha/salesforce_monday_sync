@@ -77,11 +77,13 @@ async def handle_create_pulse(event, entity_type):
     
     if entity_type == "Lead":
         sf_payload['Company'] = item_data.get("event", {}).get("pulseName", "")
+
+    if entity_type == "Account" or entity_type == "Opportunity":
+        sf_payload['Name'] = item_data.get("event", {}).get("pulseName", "")
     
     if config.get("record_type", ""):
         sf_payload["RecordTypeId"] = config["record_type"]
     
-        
     for col_id, (sf_field, value_key, transform_fn) in config["field_mapping"].items():
         raw_value = column_values.get(col_id, {}).get(value_key, "")
         value = transform_fn(raw_value) if transform_fn else raw_value
