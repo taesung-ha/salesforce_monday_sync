@@ -40,8 +40,8 @@ async def handle_update_column(event, entity_type):
         col_data = column_values.get(column_id, {})
         
         raw_value = col_data.get(value_key, "")
-        if isinstance(raw_value, (int, float)):
-            value = raw_value
+        if isinstance(col_data, (int, float)):
+            value = col_data
         else:
             value = transform_fn(raw_value) if transform_fn else raw_value
 
