@@ -2,6 +2,7 @@ from config.entity_config import ENTITY_CONFIG
 from services.monday_service import get_monday_item_details, update_monday_column
 from services.salesforce_service import update_salesforce_record, create_salesforce_record
 from services.log_service import log_to_db, send_telegram_alert
+from utils.transformer import split_name
 
 async def handle_update_column(event, entity_type):
     config = ENTITY_CONFIG[entity_type]
@@ -77,9 +78,21 @@ async def handle_create_pulse(event, entity_type):
     
     if entity_type == "Lead":
         sf_payload['Company'] = item_data.get("event", {}).get("pulseName", "")
+        sf_payload['LastName'] = 'Unknown'  # Lead는 LastName 필수, 기본값 설정
 
-    if entity_type == "Account" or entity_type == "Opportunity":
+    elif entity_type == "Account":
         sf_payload['Name'] = item_data.get("event", {}).get("pulseName", "")
+
+    elif entity_type == "Opportunity":
+        sf_payload['Name'] = item_data.get("event", {}).get("pulseName", "")
+        sf_payload['StageName'] = 'Prospecting'  # 기본 Stage 설정
+        sf_payload['CloseDate'] = '9999-12-31'  # 기본 CloseDate 설정
+    
+    else:
+        full_name = item_data.get("event", {}).get("pulseName", "")
+        first_name, last_name = split_name(full_name)
+        sf_payload['FirstName'] = first_name
+        sf_payload['LastName'] = last_name
     
     if config.get("record_type", ""):
         sf_payload["RecordTypeId"] = config["record_type"]
@@ -91,6 +104,7 @@ async def handle_create_pulse(event, entity_type):
             sf_payload[sf_field] = value
 
     sf_id = create_salesforce_record(config["object_name"], sf_payload)
+    
     if sf_id:
         update_monday_column(item_id, board_id, config["sf_id_column"], sf_id)
         log_to_db("create_pulse", board_id, item_id, "", "success", response_data={"sf_id": sf_id})
@@ -115,14 +129,20 @@ async def handle_update_name(event, entity_type):
         if entity_type == "Lead":
             # Lead의 경우 Company 필드 업데이트
             success = update_salesforce_record(config["object_name"], sf_id, {"Company": new_name})
-        else:
-            # 다른 엔티티의 경우 Name 필드 업데이트
+        elif entity_type in ["Account", "Opportunity"]:
             success = update_salesforce_record(config["object_name"], sf_id, {"Name": new_name})
+            
         log_to_db("update_name", board_id, item_id, "", "success" if success else "failed",
                 response_data={"sf_id": sf_id, "Name": new_name})
+        
         if success:
             print(f"✅ Updated Name for {entity_type} {sf_id}")
             return {"status": f"✅ Updated Name for {entity_type} {sf_id}"}
+        
+        else:
+            send_telegram_alert(f"❌ Failed to update Name for {entity_type} {sf_id}")
+            print(f"❌ Failed to update Name for {entity_type} {sf_id}")
+            return {"status": f"❌ Failed to update Name for {entity_type}"}
 
     log_to_db("update_name", board_id, item_id, "", "skipped", response_data={"msg": "No Salesforce ID"})
     print(f"⏩ Skipped: No Salesforce ID for item {item_id} on board {board_id}")

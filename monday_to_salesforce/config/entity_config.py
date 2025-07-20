@@ -92,7 +92,7 @@ ENTITY_CONFIG = {
             "dropdown_mksjwx1c": ("Type", "labels", join_labels),
             "long_text_mksjyg4z": ("Description", "value", identity),
             "numeric_mksjdntv": ("Amount", "value", identity),
-            "text_mkryhgwb": ("CloseDate", "value", identity),
+            "date_mkt1abcz": ("CloseDate", "date", identity),
         }
     }
 }
