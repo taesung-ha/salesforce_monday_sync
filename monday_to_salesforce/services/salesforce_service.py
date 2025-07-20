@@ -44,4 +44,11 @@ def create_salesforce_record(object_name: str, fields: dict):
     response = requests.post(url, headers=headers, json=fields)
     if response.status_code == 201:
         return response.json().get("id")
+    else:
+        try:
+            error_data = response.json()
+        except ValueError:
+            error_data = {"error": "Invalid JSON response", "text": response.text}
+        
+        print(f"❌ Salesforce record creation failed: {error_data}")
     return None
