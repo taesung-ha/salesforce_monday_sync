@@ -59,8 +59,8 @@ ENTITY_CONFIG = {
             "color_mkstk7e5": ("Industry", "label", identity),
             "long_text_mksjv61h": ("Description", "value", identity),
             "dropdown_mkt01cp2": ("Capacity_Building_Needs__c", "labels", join_labels)
-        }
-
+        },
+        
     },
     "Contact": {
         "board_id": 9429890440,
@@ -86,6 +86,9 @@ ENTITY_CONFIG = {
             "text_mks67a8w": ("MobilePhone", "value", identity),
             "text_mks6d5v1": ("LinkedIn__c", "value", identity),
             "text_mks6c82k": ("Email", "value", identity),
+        },
+        "link_mappings": {
+            "board_relation_mks98dnn": ("Account", "AccountId")
         }
     },
     "Opportunity": {
@@ -98,6 +101,11 @@ ENTITY_CONFIG = {
             "long_text_mksjyg4z": ("Description", "value", identity),
             "numeric_mksjdntv": ("Amount", "value", identity),
             "date_mkt1abcz": ("CloseDate", "date", identity),
+        },
+        "link_mappings": {
+            "board_relation_mks9nfzc": ("Account", "AccountId"),
+            "board_relation_mksdqfg0": ("Contact", "ContactId")
         }
+        
     }
 }
