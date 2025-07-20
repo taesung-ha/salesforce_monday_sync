@@ -37,8 +37,13 @@ async def handle_update_column(event, entity_type):
     # 컬럼 매핑 확인
     if column_id in config["field_mapping"]:
         sf_field, value_key, transform_fn = config["field_mapping"][column_id]
-        raw_value = column_values.get(column_id, {}).get(value_key, "")
-        value = transform_fn(raw_value) if transform_fn else raw_value
+        col_data = column_values.get(column_id, {})
+        
+        raw_value = col_data.get(value_key, "")
+        if isinstance(raw_value, (int, float)):
+            value = raw_value
+        else:
+            value = transform_fn(raw_value) if transform_fn else raw_value
 
         if value:
             success = update_salesforce_record(config["object_name"], sf_id, {sf_field: value})
@@ -50,6 +55,7 @@ async def handle_update_column(event, entity_type):
     
     log_to_db("update_column_value", board_id, item_id, column_id, "skipped",
               response_data={"msg": f"No mapping for column {column_id}"})
+    
     print(f"⏩ Skipped: No mapping for column {column_id} in {entity_type}")
     return {"status": "⏩ Skipped: No mapping for this column"}
 
