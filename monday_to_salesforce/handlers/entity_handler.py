@@ -155,8 +155,6 @@ async def handle_update_name(event, entity_type):
     print(f"⏩ Skipped: No Salesforce ID for item {item_id} on board {board_id}")
     return {"status": "⏩ Skipped: No Salesforce ID"}
 
-'''
-handle_board_connection 만들기
 
 def get_newly_linked_ids(event):
     new_ids = set([p['linkedPulseId'] for p in event['value'].get('linkedPulseIds', [])])
@@ -164,14 +162,48 @@ def get_newly_linked_ids(event):
     return list(new_ids - old_ids)
     
 async def handle_board_connection(event, entity_type):
-    source_item_id = event.get('pulseId')
+    config = ENTITY_CONFIG[entity_type]
     board_id = event.get('boardId')
+    source_item_id = event.get('pulseId')
     column_id = event.get('columnId')
     
     source_item = get_monday_item_details(source_item_id, board_id)
-    source_sf_id = source_item['']
+    column_values = source_item.get('event', {}).get('columnValues', {})
+    source_sf_id = column_values.get(ENTITY_CONFIG[entity_type]["sf_id_column"], {}).get("value", "")
     
+    if not source_sf_id:
+        print(f"⏩ Skipped: No Salesforce ID for item {source_item_id} on board {board_id}")
+        return {"status": "⏩ Skipped: No Salesforce ID"}
     
+    linked_ids = get_newly_linked_ids(event)
+    if not linked_ids:
+        print(f"⏩ Skipped: No newly linked items for {source_item_id} on board {board_id}")
+        return {"status": "⏩ Skipped: No newly linked items"}
+    
+    link_mapping = ENTITY_CONFIG[entity_type].get("link_mappings", {}).get(column_id)
+    if not link_mapping:
+        print(f"⏩ Skipped: No link mapping for column {column_id} in {entity_type}")
+        return {"status": "⏩ Skipped: No link mapping for this column"}
+    
+    target_entity, sf_field = link_mapping
+    
+    for target_item_id in linked_ids:
+        target_config = ENTITY_CONFIG[target_entity]
+        target_item = get_monday_item_details(target_item_id, target_config["board_id"])
+        target_sf_id = target_item.get("event", {}).get("columnValues", {}).get(target_config["sf_id_column"], {}).get("value", "")
+        
+        if target_sf_id:
+            success = update_salesforce_record(entity_type, source_sf_id, {sf_field: target_sf_id})
+            log_to_db('update_relation', board_id, source_item_id, column_id, "success" if success else "failed",
+                      response_data={"source_sf_id": source_sf_id, "target_sf_id": target_sf_id, "field": sf_field})
+            print(f"✅ Linked {target_entity} ({target_sf_id}) to {entity_type} ({source_sf_id}) via {sf_field}")
+        else:
+            log_to_db('update_relation', board_id, source_item_id, column_id, "skipped",
+                      response_data={"msg": f"Target item {target_item_id} has no Salesforce ID"})
+            print(f"⚠️ Target item {target_item_id} has no Salesforce ID")
+        
+    return {"status": f"✅ Linked {len(linked_ids)} items"}
+'''
     {'event': 
     {'app': 'monday', 'type': 'update_column_value', 
     'triggerTime': '2025-07-17T08:56:17.956Z', 'subscriptionId': 542173598, 
@@ -187,12 +219,6 @@ async def handle_board_connection(event, entity_type):
     {'linkedPulseId': 9607685328}, {'linkedPulseId': 9608173291}]}, 
     'changedAt': 1752742577.5786905, 'isTopGroup': True, 
     'triggerUuid': 'd8bb08692722451b36a4450816534b37'}}
-    
-
-    linked_items = event.get('value', {}).get('linkedPulseIds', [])
-    if not linked_items:
-        return {"status": "⏩ Skipped: No linked items found"}
-
-    target_item_id = linked_items[0].get('linkedPulseId')
 '''
+
 

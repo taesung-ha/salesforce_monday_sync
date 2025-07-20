@@ -33,6 +33,11 @@ ENTITY_CONFIG = {
             "dropdown_mksf2z7p": ("Funding__c", "labels", join_labels),
             "text_mksfsgjw": ("Other_Funding__c", "value", identity),
             "long_text_mksfhq35": ("Main_Challenges__c", "value", identity),
+        },
+        "link_mappings": {
+            "board_relation_mksdqfg0": ("Opportunity", "Linked_Opportunity__c"),
+            "board_relation_mks9cjfs": ("Account", "Linked_Account__c"),
+            "board_relation_mks95q": ("Contact", "Linked_Contact__c")
         }
     },
     
