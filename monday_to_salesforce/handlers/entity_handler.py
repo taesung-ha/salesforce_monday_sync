@@ -45,13 +45,12 @@ async def handle_update_column(event, entity_type):
             raw_value = col_data.get(value_key, "")
             value = transform_fn(raw_value) if transform_fn else raw_value
 
-        if value:
-            success = update_salesforce_record(config["object_name"], sf_id, {sf_field: value})
-            log_to_db("update_column_value", board_id, item_id, column_id,
-                      "success" if success else "failed",
-                      response_data={"sf_id": sf_id, "field": sf_field, "value": value})
-            print(f"✅ Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}")
-            return {"status": f"Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}"}
+        success = update_salesforce_record(config["object_name"], sf_id, {sf_field: value})
+        log_to_db("update_column_value", board_id, item_id, column_id,
+                    "success" if success else "failed",
+                    response_data={"sf_id": sf_id, "field": sf_field, "value": value})
+        print(f"✅ Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}")
+        return {"status": f"Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}"}
     
     log_to_db("update_column_value", board_id, item_id, column_id, "skipped",
               response_data={"msg": f"No mapping for column {column_id}"})
