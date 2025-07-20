@@ -114,6 +114,7 @@ async def handle_create_pulse(event, entity_type):
     if sf_id:
         update_monday_column(item_id, board_id, config["sf_id_column"], sf_id)
         log_to_db("create_pulse", board_id, item_id, "", "success", response_data={"sf_id": sf_id})
+        print(f"✅ {entity_type} created: {sf_id}")
         return {"messages": f"✅ {entity_type} created: {sf_id}"}
 
     send_telegram_alert(f"❌ Failed to create {entity_type} for item {item_id}")
