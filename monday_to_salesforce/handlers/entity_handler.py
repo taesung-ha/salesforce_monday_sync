@@ -132,13 +132,18 @@ async def handle_update_name(event, entity_type):
     item_data = get_monday_item_details(item_id, board_id)
     sf_id = item_data.get("event", {}).get("columnValues", {}).get(config["sf_id_column"], {}).get("value", "")
 
+    success = False
+
     if sf_id:
         if entity_type == "Lead":
             # Lead의 경우 Company 필드 업데이트
             success = update_salesforce_record(config["object_name"], sf_id, {"Company": new_name})
         elif entity_type in ["Account", "Opportunity"]:
             success = update_salesforce_record(config["object_name"], sf_id, {"Name": new_name})
-            
+        else:
+            first_name, last_name = split_name(new_name)
+            success = update_salesforce_record(config["object_name"], sf_id, {"FirstName": first_name, "LastName": last_name})
+
         log_to_db("update_name", board_id, item_id, "", "success" if success else "failed",
                 response_data={"sf_id": sf_id, "Name": new_name})
         
@@ -193,7 +198,7 @@ async def handle_board_connection(event, entity_type):
         target_sf_id = target_item.get("event", {}).get("columnValues", {}).get(target_config["sf_id_column"], {}).get("value", "")
         
         if target_sf_id:
-            success = update_salesforce_record(entity_type, source_sf_id, {sf_field: target_sf_id})
+            success = update_salesforce_record(config['object_name'], source_sf_id, {sf_field: target_sf_id})
             log_to_db('update_relation', board_id, source_item_id, column_id, "success" if success else "failed",
                       response_data={"source_sf_id": source_sf_id, "target_sf_id": target_sf_id, "field": sf_field})
             print(f"✅ Linked {target_entity} ({target_sf_id}) to {entity_type} ({source_sf_id}) via {sf_field}")
@@ -203,6 +208,7 @@ async def handle_board_connection(event, entity_type):
             print(f"⚠️ Target item {target_item_id} has no Salesforce ID")
         
     return {"status": f"✅ Linked {len(linked_ids)} items"}
+
 '''
     {'event': 
     {'app': 'monday', 'type': 'update_column_value', 
