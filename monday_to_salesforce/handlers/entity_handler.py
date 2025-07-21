@@ -2,7 +2,7 @@ from config.entity_config import ENTITY_CONFIG
 from services.monday_service import get_monday_item_details, update_monday_column
 from services.salesforce_service import update_salesforce_record, create_salesforce_record
 from services.log_service import log_to_db, send_telegram_alert
-from utils.transformer import split_name
+from utils.transformer import split_name, get_newly_linked_ids
 from datetime import datetime, timezone
 
 async def handle_update_column(event, entity_type):
@@ -159,12 +159,6 @@ async def handle_update_name(event, entity_type):
     log_to_db("update_name", board_id, item_id, "", "skipped", response_data={"msg": "No Salesforce ID"})
     print(f"⏩ Skipped: No Salesforce ID for item {item_id} on board {board_id}")
     return {"status": "⏩ Skipped: No Salesforce ID"}
-
-
-def get_newly_linked_ids(event):
-    new_ids = set([p['linkedPulseId'] for p in event['value'].get('linkedPulseIds', [])])
-    old_ids = set([p['linkedPulseId'] for p in event.get('previousValue', {}).get('linkedPulseIds', [])])
-    return list(new_ids - old_ids)
     
 async def handle_board_connection(event, entity_type):
     config = ENTITY_CONFIG[entity_type]
