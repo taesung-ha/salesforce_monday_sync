@@ -2,7 +2,7 @@ from config.entity_config import ENTITY_CONFIG
 from services.monday_service import get_monday_item_details, update_monday_column
 from services.salesforce_service import update_salesforce_record, create_salesforce_record
 from services.log_service import log_to_db, send_telegram_alert
-from utils.transformer import split_name, get_newly_linked_ids
+from utils.transformer import split_name, get_added_and_removed_ids
 from datetime import datetime, timezone
 
 async def handle_update_column(event, entity_type):
@@ -165,43 +165,60 @@ async def handle_board_connection(event, entity_type):
     board_id = event.get('boardId')
     source_item_id = event.get('pulseId')
     column_id = event.get('columnId')
-    
+
+    # Source Salesforce ID
     source_item = get_monday_item_details(source_item_id, board_id)
     column_values = source_item.get('event', {}).get('columnValues', {})
-    source_sf_id = column_values.get(ENTITY_CONFIG[entity_type]["sf_id_column"], {}).get("value", "")
-    
+    source_sf_id = column_values.get(config["sf_id_column"], {}).get("value", "")
+
     if not source_sf_id:
-        print(f"⏩ Skipped: No Salesforce ID for item {source_item_id} on board {board_id}")
-        return {"status": "⏩ Skipped: No Salesforce ID"}
-    
-    linked_ids = get_newly_linked_ids(event)
-    if not linked_ids:
-        print(f"⏩ Skipped: No newly linked items for {source_item_id} on board {board_id}")
-        return {"status": "⏩ Skipped: No newly linked items"}
-    
-    link_mapping = ENTITY_CONFIG[entity_type].get("link_mappings", {}).get(column_id)
+        print(f"⏩ Skipped: No Salesforce ID for {source_item_id}")
+        return {"status": "⏩ Skipped"}
+
+    # 추가/삭제 ID 확인
+    added_ids, removed_ids = get_added_and_removed_ids(event)
+    print(f"🔍 Added: {added_ids}, Removed: {removed_ids}")
+
+    # 매핑 확인
+    link_mapping = config.get("link_mappings", {}).get(column_id)
     if not link_mapping:
-        print(f"⏩ Skipped: No link mapping for column {column_id} in {entity_type}")
-        return {"status": "⏩ Skipped: No link mapping for this column"}
-    
+        print(f"⏩ Skipped: No link mapping for {column_id}")
+        return {"status": "⏩ Skipped: No link mapping"}
+
     target_entity, sf_field = link_mapping
-    
-    for target_item_id in linked_ids:
+
+    # Helper 함수: Target SFID 가져오기
+    def get_target_sf_id(item_id, target_entity):
         target_config = ENTITY_CONFIG[target_entity]
-        target_item = get_monday_item_details(target_item_id, target_config["board_id"])
-        target_sf_id = target_item.get("event", {}).get("columnValues", {}).get(target_config["sf_id_column"], {}).get("value", "")
-        
+        target_item = get_monday_item_details(item_id, target_config["board_id"])
+        return target_item.get("event", {}).get("columnValues", {}).get(target_config["sf_id_column"], {}).get("value", "")
+
+    # ✅ 추가된 링크 처리
+    for target_item_id in added_ids:
+        target_sf_id = get_target_sf_id(target_item_id, target_entity)
         if target_sf_id:
             success = update_salesforce_record(config['object_name'], source_sf_id, {sf_field: target_sf_id})
-            log_to_db('update_relation', board_id, source_item_id, column_id, "success" if success else "failed",
-                      response_data={"source_sf_id": source_sf_id, "target_sf_id": target_sf_id, "field": sf_field})
-            print(f"✅ Linked {target_entity} ({target_sf_id}) to {entity_type} ({source_sf_id}) via {sf_field}")
+            log_to_db('update_relation_add', board_id, source_item_id, column_id, "success" if success else "failed",
+                      response_data={"source_sf_id": source_sf_id, "added_target_sf_id": target_sf_id, "field": sf_field})
+            if not success:
+                send_telegram_alert(f"❌ Failed to link {target_entity} {target_sf_id} to {entity_type} {source_sf_id}")
+            print(f"{'✅' if success else '❌'} Linked {target_entity} {target_sf_id} to {entity_type} {source_sf_id}")
         else:
-            log_to_db('update_relation', board_id, source_item_id, column_id, "skipped",
-                      response_data={"msg": f"Target item {target_item_id} has no Salesforce ID"})
-            print(f"⚠️ Target item {target_item_id} has no Salesforce ID")
-        
-    return {"status": f"✅ Linked {len(linked_ids)} items"}
+            log_to_db('update_relation_add', board_id, source_item_id, column_id, "skipped",
+                      response_data={"msg": f"No Salesforce ID for target {target_item_id}"})
+
+    # ✅ 제거된 링크 처리
+    for target_item_id in removed_ids:
+        target_sf_id = get_target_sf_id(target_item_id, target_entity)
+        success = update_salesforce_record(config['object_name'], source_sf_id, {sf_field: None})
+        log_to_db('update_relation_remove', board_id, source_item_id, column_id, "success" if success else "failed",
+                  response_data={"source_sf_id": source_sf_id, "removed_target_sf_id": target_sf_id, "field": sf_field})
+        if not success:
+            send_telegram_alert(f"❌ Failed to unlink {target_entity} from {entity_type} {source_sf_id}")
+        print(f"{'❌' if not success else '✅'} Unlinked {target_entity} {target_sf_id} from {entity_type} {source_sf_id}")
+
+    return {"status": f"✅ Added: {len(added_ids)}, Removed: {len(removed_ids)}"}
+
 
 '''
     {'event': 

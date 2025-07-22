@@ -12,7 +12,11 @@ def split_name(full_name):
     else:
         return (" ".join(parts[:-1]), parts[-1])
 
-def get_newly_linked_ids(event):
+def get_added_and_removed_ids(event):
     new_ids = set([p['linkedPulseId'] for p in event['value'].get('linkedPulseIds', [])])
     old_ids = set([p['linkedPulseId'] for p in event.get('previousValue', {}).get('linkedPulseIds', [])])
-    return list(new_ids - old_ids)
+    
+    added_ids = set(new_ids) - set(old_ids)
+    removed_ids = set(old_ids) - set(new_ids)
+    
+    return added_ids, removed_ids
