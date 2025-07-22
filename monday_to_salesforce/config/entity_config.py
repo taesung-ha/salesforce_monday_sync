@@ -88,7 +88,8 @@ ENTITY_CONFIG = {
             "text_mks6c82k": ("Email", "value", identity),
         },
         "link_mappings": {
-            "board_relation_mks98dnn": ("Account", "AccountId")
+            "board_relation_mks98dnn": ("Account", "AccountId"),
+            "board_relation_mkt3d4a9": ("Account", "npsp__Primary_Affiliation__c")
         }
     },
     "Opportunity": {
