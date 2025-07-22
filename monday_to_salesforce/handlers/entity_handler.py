@@ -3,7 +3,7 @@ from services.monday_service import get_monday_item_details, update_monday_colum
 from services.salesforce_service import update_salesforce_record, create_salesforce_record
 from services.log_service import log_to_db, send_telegram_alert
 from utils.transformer import split_name, get_added_and_removed_ids
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 async def handle_update_column(event, entity_type):
     config = ENTITY_CONFIG[entity_type]
@@ -92,7 +92,7 @@ async def handle_create_pulse(event, entity_type):
     elif entity_type == "Opportunity":
         sf_payload['Name'] = item_data.get("event", {}).get("pulseName", "")
         sf_payload['StageName'] = 'Need Analysis'  # 기본 Stage 설정
-        sf_payload['CloseDate'] = datetime.now(timezone.utc).strftime('%Y-%m-%d') # 기본 CloseDate 설정
+        sf_payload['CloseDate'] = (datetime.now(timezone.utc) + timedelta(days=30)).strftime('%Y-%m-%d')
 
     else:
         full_name = item_data.get("event", {}).get("pulseName", "")
