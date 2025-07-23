@@ -7,7 +7,7 @@ def create_mapping_table():
     cur = conn.cursor()
     cur.execute("""
     CREATE TABLE IF NOT EXISTS item_sf_mapping (
-        item_id VARCHAR(50) PRIMARY KEY,
+        item_id VARCHAR(50),
         board_id VARCHAR(50) NOT NULL,
         sf_id VARCHAR(50) NOT NULL,
         entity_type VARCHAR(50),
