@@ -83,7 +83,8 @@ async def handle_create_pulse(event, entity_type):
     sf_payload = {}
     
     if entity_type == "Lead":
-        sf_payload['Company'] = item_data.get("event", {}).get("pulseName", "")
+        company = item_data.get("event", {}).get("pulseName", "").strip()
+        sf_payload['Company'] = company.capitalize() if company else "Unknown"
         sf_payload['LastName'] = 'Unknown'  # Lead는 LastName 필수, 기본값 설정
 
     elif entity_type == "Account":

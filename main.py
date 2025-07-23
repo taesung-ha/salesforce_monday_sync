@@ -8,9 +8,9 @@ from sync_utils import save_sync_time
 
 def sync_boards():
     board_configs = [
-         "mapping_config/lead.json",
+        "mapping_config/opportunity.json",
         "mapping_config/contact.json",
-        "mapping_config/opportunity.json"
+        "mapping_config/lead.json"
     ]
 
     for config_path in board_configs:
@@ -23,12 +23,12 @@ def sync_boards():
             print(f"Please check the configuration file and ensure all required fields are set correctly.", flush=True)
 
     print("\n📦 Syncing Account board...")
+    
     try:
         sync_account_records()
         print("✅ Successfully synced Account board.", flush=True)
     except Exception as e:
         print(f"❌ Error syncing Account board: {e}", flush=True)
-
 
 def connect_all_boards():
     print("\n🔗 Starting Monday board linkage...")
@@ -53,10 +53,8 @@ def main():
     connect_all_boards()
     print("\n🔄 All boards synced and linked successfully!", flush=True)
     
-
-    
     print("🎉 Process completed successfully!", flush=True)
-    
+
 if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1:

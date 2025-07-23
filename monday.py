@@ -17,7 +17,7 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
     import requests
     monday_items = {}
     cursor = None
-
+    
     while True:
         query = """
         query ($boardId: ID!, $cursor: String) {
@@ -148,6 +148,7 @@ def format_value_for_column(value, col_type):
             return float(value)
         except:
             return 0
+    
     else:
         return str(value)  # fallback: treat as text
     
