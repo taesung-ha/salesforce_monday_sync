@@ -225,7 +225,7 @@ async def handle_board_connection(event, entity_type):
 
 async def handle_item_deleted(event, entity_type):
     board_id = event.get("boardId")
-    item_id = event.get("pulseId")
+    item_id = event.get("itemId")
     
     sf_id = get_sf_id(item_id, board_id)
     
@@ -237,7 +237,7 @@ async def handle_item_deleted(event, entity_type):
     success = delete_salesforce_record(ENTITY_CONFIG[entity_type]["object_name"], sf_id)
     
     if success:
-        delete_mapping(item_id)
+        delete_mapping(item_id, board_id)
         log_to_db("delete_pulse", board_id, item_id, "", "success", {"sf_id": sf_id})
         print(f"✅ Deleted {entity_type} {sf_id} from Salesforce")
         return {"status": f"✅ Deleted {entity_type} {sf_id}"}
