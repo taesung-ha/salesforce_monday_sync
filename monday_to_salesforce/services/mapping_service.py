@@ -30,6 +30,7 @@ def save_mapping(item_id, board_id, sf_id, entity_type):
     conn.commit()
     cur.close()
     conn.close()
+    print(f"✅ Mapping saved: {item_id} -> {sf_id} for board {board_id}")
 
 def get_sf_id(item_id, board_id):
     conn = psycopg2.connect(**DB_CONFIG)
@@ -50,3 +51,4 @@ def delete_mapping(item_id, board_id):
     conn.commit()
     cur.close()
     conn.close()
+    print(f"✅ Mapping deleted: {item_id} for board {board_id}")
