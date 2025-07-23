@@ -105,7 +105,9 @@ ENTITY_CONFIG = {
         },
         "link_mappings": {
             "board_relation_mks9nfzc": ("Account", "AccountId"),
-            "board_relation_mksdqfg0": ("Contact", "ContactId")
+            "board_relation_mksdqfg0": ("Contact", "ContactId"),
+            "board_relation_mkt3dbmb": ("Contact", "npsp__Primary_Contact__c"),
+            
         }
         
     }

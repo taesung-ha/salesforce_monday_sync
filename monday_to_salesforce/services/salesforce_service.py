@@ -52,3 +52,12 @@ def create_salesforce_record(object_name: str, fields: dict):
         
         print(f"❌ Salesforce record creation failed: {error_data}")
     return None
+
+def delete_salesforce_record(object_name: str, record_id: str) -> bool:
+    ACCESS_TOKEN, INSTANCE_URL = get_salesforce_access_token(
+        SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD
+    )
+    url = f"{INSTANCE_URL}/services/data/{API_VERSION}/sobjects/{object_name}/{record_id}"
+    headers = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
+    response = requests.delete(url, headers=headers)
+    return response.status_code == 204

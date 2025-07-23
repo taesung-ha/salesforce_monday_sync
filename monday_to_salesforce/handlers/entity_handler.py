@@ -1,7 +1,9 @@
+#entity_handler.py
 from config.entity_config import ENTITY_CONFIG
 from services.monday_service import get_monday_item_details, update_monday_column
-from services.salesforce_service import update_salesforce_record, create_salesforce_record
+from services.salesforce_service import update_salesforce_record, create_salesforce_record, delete_salesforce_record
 from services.log_service import log_to_db, send_telegram_alert
+from services.mapping_service import save_mapping, get_sf_id, delete_mapping
 from utils.transformer import split_name, get_added_and_removed_ids
 from datetime import datetime, timezone, timedelta
 
@@ -115,6 +117,7 @@ async def handle_create_pulse(event, entity_type):
     if sf_id:
         update_monday_column(item_id, board_id, config["sf_id_column"], sf_id)
         log_to_db("create_pulse", board_id, item_id, "", "success", response_data={"sf_id": sf_id})
+        save_mapping(item_id, board_id, sf_id, entity_type)
         print(f"✅ {entity_type} created: {sf_id}")
         return {"messages": f"✅ {entity_type} created: {sf_id}"}
 
@@ -220,6 +223,31 @@ async def handle_board_connection(event, entity_type):
 
     return {"status": f"✅ Added: {len(added_ids)}, Removed: {len(removed_ids)}"}
 
+async def handle_item_deleted(event, entity_type):
+    board_id = event.get("boardId")
+    item_id = event.get("pulseId")
+    
+    sf_id = get_sf_id(item_id, board_id)
+    
+    if not sf_id:
+        log_to_db("delete_pulse", board_id, item_id, "", "skipped", {"msg": "No Salesforce ID in cache"})
+        print(f"⏩ Skipped: No Salesforce ID for item {item_id}")
+        return {"status": "⏩ Skipped: No Salesforce ID in cache"}
+
+    success = delete_salesforce_record(ENTITY_CONFIG[entity_type]["object_name"], sf_id)
+
+    log_to_db("delete_pulse", board_id, item_id, "", "success" if success else "failed", {"sf_id": sf_id})
+    
+    if success:
+        delete_mapping(item_id)
+        log_to_db("delete_pulse", board_id, item_id, "", "success", {"sf_id": sf_id})
+        print(f"✅ Deleted {entity_type} {sf_id} from Salesforce")
+        return {"status": f"✅ Deleted {entity_type} {sf_id}"}
+    else:
+        send_telegram_alert(f"❌ Failed to delete {entity_type} {sf_id} from Salesforce")
+        log_to_db("delete_pulse", board_id, item_id, "", "failed", {"sf_id": sf_id})
+        print(f"❌ Failed to delete {entity_type} {sf_id} from Salesforce")
+        return {"status": f"❌ Failed to delete {entity_type} {sf_id}"}
 
 '''
     {'event': 

@@ -1,10 +1,18 @@
 #main.py
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from handlers.entity_handler import handle_board_connection, handle_update_column, handle_create_pulse, handle_update_name
+from handlers.entity_handler import handle_board_connection, handle_update_column, handle_create_pulse, handle_update_name, handle_item_deleted
+from services.mapping_service import create_mapping_table
+from services.log_service import create_log_table
 from config.entity_config import ENTITY_CONFIG
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    create_mapping_table()
+    create_log_table()
+    print("✅ Mapping and log tables checked/created.")
 
 @app.get("/")
 def health_check():
@@ -49,6 +57,8 @@ async def monday_webhook(req: Request):
             return await handle_create_pulse(event, entity_type)
         elif event_type == "update_name":
             return await handle_update_name(event, entity_type)
+        elif event_type == 'delete_pulse':
+            return await handle_item_deleted(event, entity_type)
 
         print(f"ℹ️ Event type {event_type} not handled.")
         return {"status": f"Unhandled event type: {event_type}"}
