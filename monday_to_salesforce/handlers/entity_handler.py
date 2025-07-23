@@ -235,8 +235,6 @@ async def handle_item_deleted(event, entity_type):
         return {"status": "⏩ Skipped: No Salesforce ID in cache"}
 
     success = delete_salesforce_record(ENTITY_CONFIG[entity_type]["object_name"], sf_id)
-
-    log_to_db("delete_pulse", board_id, item_id, "", "success" if success else "failed", {"sf_id": sf_id})
     
     if success:
         delete_mapping(item_id)
