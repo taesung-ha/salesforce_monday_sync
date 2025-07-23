@@ -13,7 +13,7 @@ ENTITY_CONFIG = {
             "email_mksx3vtp": ("Email", "value", identity),
             "short_textzb4g11iz": ("LeadSource", "value", identity),
             "text_mks821t": ("Website", "value", identity),
-            "color_mksfebkh": ("Industry", "label", identity),
+            "dropdown_mkt48t9a": ("Multi_Industry__c", "labels", join_labels),
             "text_mksfswxm": ("Other_Industry__c", "value", identity),
             "color_mksf6mtf": ("Sector__c", "label", identity),
             "text_mksfjsre": ("Other_Sector__c", "value", identity),
