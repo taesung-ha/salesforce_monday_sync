@@ -73,6 +73,7 @@ cd salesforce-monday-sync
 
 # Install dependencies
 pip install -r requirements.txt
+```
 
 ## 🔍 Key Highlights
 - ✔ **Reduced sync latency** from `60s → <10s`  
