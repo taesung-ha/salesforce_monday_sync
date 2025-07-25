@@ -25,11 +25,11 @@ It eliminates manual data entry, reduces sync delays by 80%, and ensures data in
 ---
 
 ## 🏗️ Architecture
-Monday.com ←→ AWS API Gateway ←→ AWS Lambda ←→ Salesforce
-                                    ↓
-                                    PostgreSQL
-                                    ↓
-                                    AWS S3 (Backup)
+Monday.com ←→ AWS API Gateway ←→ AWS Lambda ←→ Salesforce <br>
+↓ <br>
+PostgreSQL <br>
+↓ <br>
+AWS S3 (Backup)
 
 ---
 
