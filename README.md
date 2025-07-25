@@ -92,4 +92,4 @@ pip install -r requirements.txt
 ## 📬 Contact
 **Author:** Taesung Ha  
 📧 **Email:** [taesungh@umich.edu](mailto:taesungh@umich.edu)  
-🌐 **LinkedIn:** [https://linkedin.com/in/taesungha](https://linkedin.com/in/taesungha) 
+🌐 **LinkedIn:** [[https://linkedin.com/in/taesungha](https://www.linkedin.com/in/tae-sung-ha-696a5b246/)](https://www.linkedin.com/in/tae-sung-ha-696a5b246/) 
