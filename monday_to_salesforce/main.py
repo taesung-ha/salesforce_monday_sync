@@ -9,7 +9,7 @@ from config.entity_config import ENTITY_CONFIG
 from config.config import SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD, MONDAY_TOKEN, DB_CONFIG
 import traceback
 
-print("✅ Lambda started execution changed")
+print("✅ Lambda started execution 12:00 AM")
 
 app = FastAPI()
 
