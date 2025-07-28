@@ -75,6 +75,3 @@ def migrate_existing_data():
             if sf_id:
                 save_mapping(item_id, board_id, sf_id, entity_type)
                 print(f"✅ Migrated {entity_type} item {item_id} → SF_ID {sf_id}")
-# %%
-migrate_existing_data()
-# %%
