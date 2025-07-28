@@ -1,23 +1,44 @@
 # mapping_service.py
 import psycopg2
+from psycopg2 import OperationalError, ProgrammingError, IntegrityError
+import traceback
 from config.config import DB_CONFIG
 
 def create_mapping_table():
-    conn = psycopg2.connect(**DB_CONFIG)
-    cur = conn.cursor()
-    cur.execute("""
-    CREATE TABLE IF NOT EXISTS item_sf_mapping (
-        item_id VARCHAR(50),
-        board_id VARCHAR(50) NOT NULL,
-        sf_id VARCHAR(50) NOT NULL,
-        entity_type VARCHAR(50),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (item_id, board_id)
-    );
-    """)
-    conn.commit()
-    cur.close()
-    conn.close()
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cur = conn.cursor()
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS item_sf_mapping (
+            item_id VARCHAR(50),
+            board_id VARCHAR(50) NOT NULL,
+            sf_id VARCHAR(50) NOT NULL,
+            entity_type VARCHAR(50),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (item_id, board_id)
+        );
+        """)
+        conn.commit()
+        print("✅ Table created successfully")
+    except OperationalError as e:
+        print("❌ OperationalError: Database connection issue.")
+        print(f"Details: {e}")
+    except ProgrammingError as e:
+        print("❌ ProgrammingError: SQL syntax or query issue.")
+        print(f"Details: {e}")
+    except IntegrityError as e:
+        print("❌ IntegrityError: Constraint violation (e.g., duplicate keys).")
+        print(f"Details: {e}")
+    except Exception as e:
+        print("❌ Unknown Error occurred!")
+        print(f"Details: {e}")
+        traceback.print_exc()
+    finally:
+        try:
+            cur.close()
+            conn.close()
+        except:
+            pass
 
 def save_mapping(item_id, board_id, sf_id, entity_type):
     conn = psycopg2.connect(**DB_CONFIG)

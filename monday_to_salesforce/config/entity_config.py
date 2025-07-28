@@ -8,6 +8,7 @@ ENTITY_CONFIG = {
         "object_name": "Lead",
         "record_type": "0123p000000EILJAA4",  # Lead Record Type ID
         "field_mapping": {
+            "color_mksj2adq": ("Status", "label", identity),
             "text_mkry13cw": ("FirstName", "value", identity),
             "text_mkry1xy1": ("LastName", "value", identity),
             "email_mksx3vtp": ("Email", "value", identity),
