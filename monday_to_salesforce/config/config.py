@@ -38,15 +38,12 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
-urlparse.uses_netloc.append("postgres")
-url = urlparse.urlparse(os.getenv("DATABASE_URL"))
-
 DB_CONFIG = {
-    "dbname": url.path[1:],
-    "user": url.username,
-    "password": url.password,
-    "host": url.hostname,
-    "port": url.port,
+    "host": os.environ["DB_HOST"],  
+    "dbname": os.environ["DB_NAME"],
+    "port": os.environ["DB_PORT"],
+    "user": os.environ["DB_USER"],
+    "password": os.environ["DB_PASSWORD"]
 }
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
