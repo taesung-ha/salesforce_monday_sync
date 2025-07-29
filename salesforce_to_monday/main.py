@@ -1,10 +1,10 @@
 print("🎯 main.py Implemented!", flush=True)
 #%%
-from sync import sync_salesforce_to_monday
-from sync_account import sync_account_records
-from config import CONNECTIONS
-from monday_board_connecting import connect_items
-from sync_utils import save_sync_time
+from salesforce_monday_sync.salesforce_to_monday.sync import sync_salesforce_to_monday
+from salesforce_monday_sync.salesforce_to_monday.sync_account import sync_account_records
+from salesforce_monday_sync.salesforce_to_monday.config import CONNECTIONS
+from salesforce_monday_sync.salesforce_to_monday.monday_board_connecting import connect_items
+from salesforce_monday_sync.salesforce_to_monday.sync_utils import save_sync_time
 
 def sync_boards():
     board_configs = [

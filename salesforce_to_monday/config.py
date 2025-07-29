@@ -4,7 +4,7 @@ import os
 
 def load_env():
     try:
-        # Streamlit 환경 (Streamlit에서만 실행되는 경우)
+        # Streamlit
         import streamlit as st
         if hasattr(st, "secrets") and "SF_CLIENT_ID" in st.secrets:
             SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
@@ -16,7 +16,7 @@ def load_env():
     except Exception:
         pass
 
-    # 로컬 개발 or Render 배포 환경
+    # when not using Streamlit, load from .env file
     from dotenv import load_dotenv
     load_dotenv()
 

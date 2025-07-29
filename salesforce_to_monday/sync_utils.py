@@ -27,24 +27,3 @@ def save_sync_time():
     except Exception as e:
         print(f'Error saving sync time: {e}')
         return
-    
-    '''
-    # Git user 설정 (GitHub Actions용)
-    os.system('git config --global user.name "github-actions[bot]"')
-    os.system('git config --global user.email "github-actions[bot]@users.noreply.github.com"')
-
-    # 변경 사항 스테이징
-    os.system(f'git add {sync_file}')
-
-    # 커밋 시도하고 결과 코드 확인
-    commit_result = os.system('git commit -m "🔄 update last_sync_time"')
-    print("🔍 git commit result:", commit_result)
-
-    # push 시도하고 결과 코드 확인
-    push_result = os.system('git push')
-    print("🚀 git push result:", push_result)
-
-    # 디버깅용 git 상태 확인
-    os.system('git status')
-    os.system('git log -1 --oneline')
-    '''

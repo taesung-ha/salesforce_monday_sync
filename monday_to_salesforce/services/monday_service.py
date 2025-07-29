@@ -36,7 +36,7 @@ def get_monday_item_details(item_id, board_id):
         result = response.json()
         items = result['data']['boards'][0]['items_page']['items']
         for item in items:
-            if item['id'] == str(item_id):  # API에서 ID는 str로 반환됨
+            if item['id'] == str(item_id):  # when using Monday.com API, Id is returned as a string
                 return transform_monday_item(item)
         cursor = result['data']['boards'][0]['items_page']['cursor']
         if not cursor:
@@ -107,8 +107,8 @@ def update_monday_column(item_id: str, board_id: str, column_id: str, value: str
     }
     """
     variables = {
-        "board_id": board_id,            # ⬅ 추가
-        "item_id": str(item_id),         # ⬅ Int가 아닌 str(ID type)
+        "board_id": board_id,          
+        "item_id": str(item_id),        
         "column_id": column_id,
         "value": json.dumps(value)
     }

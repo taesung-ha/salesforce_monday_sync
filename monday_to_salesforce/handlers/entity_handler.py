@@ -13,12 +13,12 @@ async def handle_update_column(event, entity_type):
     item_id = event.get("pulseId")
     column_id = event.get("columnId")
 
-    # Monday item 상세 데이터 가져오기
+    # fetch monday.com item details
     item_data = get_monday_item_details(item_id, board_id)
     column_values = item_data.get("event", {}).get("columnValues", {})
     sf_id = column_values.get(config["sf_id_column"], {}).get("value", "")
     """
-    item_data 구조:
+    Structure of item_data example:
     {
         "event": {
             "pulseName": "CompanyName",
@@ -37,7 +37,7 @@ async def handle_update_column(event, entity_type):
         print(f"⏩ Skipped: No Salesforce ID for item {item_id} on board {board_id}")
         return {"status": "⏩ Skipped: No Salesforce ID"}
 
-    # 컬럼 매핑 확인
+    # Check column mapping
     if column_id in config["field_mapping"]:
         sf_field, value_key, transform_fn = config["field_mapping"][column_id]
         col_data = column_values.get(column_id, {})
@@ -68,33 +68,21 @@ async def handle_create_pulse(event, entity_type):
     item_id = event.get("pulseId")
     item_data = get_monday_item_details(item_id, board_id)
     column_values = item_data.get("event", {}).get("columnValues", {})
-    """
-    item_data 구조:
-    {
-        "event": {
-            "pulseName": "CompanyName",
-            "columnValues": {
-                "short_textzb4g11iz": {"value": "MondayForm"},
-                "email_mksx3vtp": {"value": "test@example.com"},
-                ...
-            }
-        }
-    }
-    """
-    # Salesforce 생성용 Payload 구성
+
+    # Payload Construction for Creatign Records in Salesforce
     sf_payload = {}
     
     if entity_type == "Lead":
         company = item_data.get("event", {}).get("pulseName", "").strip()
         sf_payload['Company'] = company.capitalize() if company else "Unknown"
-        sf_payload['LastName'] = 'Unknown'  # Lead는 LastName 필수, 기본값 설정
+        sf_payload['LastName'] = 'Unknown'  # Leads' required fields: Company, LastName
 
     elif entity_type == "Account":
         sf_payload['Name'] = item_data.get("event", {}).get("pulseName", "")
 
     elif entity_type == "Opportunity":
         sf_payload['Name'] = item_data.get("event", {}).get("pulseName", "")
-        sf_payload['StageName'] = 'Need Analysis'  # 기본 Stage 설정
+        sf_payload['StageName'] = 'Need Analysis'  # Default stage
         sf_payload['CloseDate'] = (datetime.now(timezone.utc) + timedelta(days=30)).strftime('%Y-%m-%d')
 
     else:
@@ -140,7 +128,7 @@ async def handle_update_name(event, entity_type):
 
     if sf_id:
         if entity_type == "Lead":
-            # Lead의 경우 Company 필드 업데이트
+            # Update Company field for Leads
             success = update_salesforce_record(config["object_name"], sf_id, {"Company": new_name})
         elif entity_type in ["Account", "Opportunity"]:
             success = update_salesforce_record(config["object_name"], sf_id, {"Name": new_name})
@@ -179,11 +167,11 @@ async def handle_board_connection(event, entity_type):
         print(f"⏩ Skipped: No Salesforce ID for {source_item_id}")
         return {"status": "⏩ Skipped"}
 
-    # 추가/삭제 ID 확인
+    # Check added/removed IDs
     added_ids, removed_ids = get_added_and_removed_ids(event)
     print(f"🔍 Added: {added_ids}, Removed: {removed_ids}")
 
-    # 매핑 확인
+    # Check mapping
     link_mapping = config.get("link_mappings", {}).get(column_id)
     if not link_mapping:
         print(f"⏩ Skipped: No link mapping for {column_id}")
@@ -191,13 +179,13 @@ async def handle_board_connection(event, entity_type):
 
     target_entity, sf_field = link_mapping
 
-    # Helper 함수: Target SFID 가져오기
+    # Helper function: Get Target SF ID
     def get_target_sf_id(item_id, target_entity):
         target_config = ENTITY_CONFIG[target_entity]
         target_item = get_monday_item_details(item_id, target_config["board_id"])
         return target_item.get("event", {}).get("columnValues", {}).get(target_config["sf_id_column"], {}).get("value", "")
 
-    # ✅ 추가된 링크 처리
+    # ✅ Process added links
     for target_item_id in added_ids:
         target_sf_id = get_target_sf_id(target_item_id, target_entity)
         if target_sf_id:
@@ -211,7 +199,7 @@ async def handle_board_connection(event, entity_type):
             log_to_db('update_relation_add', board_id, source_item_id, column_id, "skipped",
                       response_data={"msg": f"No Salesforce ID for target {target_item_id}"})
 
-    # ✅ 제거된 링크 처리
+    # ✅ Process removed links
     for target_item_id in removed_ids:
         target_sf_id = get_target_sf_id(target_item_id, target_entity)
         success = update_salesforce_record(config['object_name'], source_sf_id, {sf_field: None})
@@ -246,23 +234,3 @@ async def handle_item_deleted(event, entity_type):
         log_to_db("delete_pulse", board_id, item_id, "", "failed", {"sf_id": sf_id})
         print(f"❌ Failed to delete {entity_type} {sf_id} from Salesforce")
         return {"status": f"❌ Failed to delete {entity_type} {sf_id}"}
-
-'''
-    {'event': 
-    {'app': 'monday', 'type': 'update_column_value', 
-    'triggerTime': '2025-07-17T08:56:17.956Z', 'subscriptionId': 542173598, 
-    'isRetry': False, 'userId': 75857771, 'originalTriggerUuid': None, 
-    'boardId': 9378000505, 'groupId': 'group_mkry9yes', 'pulseId': 9605887058, 
-    'pulseName': 'Solo Leveling Rank E', 'columnId': 'board_relation_mks95q', 
-    'columnType': 'board-relation', 'columnTitle': 'Converted_Contact', 
-    'value': {'linkedPulseIds': [{'linkedPulseId': 9607665733}, 
-    {'linkedPulseId': 9607679534}, {'linkedPulseId': 9607685328}, 
-    {'linkedPulseId': 9608173291}], 'changed_at': '2025-07-17T08:56:15.739Z'}, 
-    'previousValue': {'changed_at': '2025-07-17T08:56:03.591Z', 
-    'linkedPulseIds': [{'linkedPulseId': 9607679534}, 
-    {'linkedPulseId': 9607685328}, {'linkedPulseId': 9608173291}]}, 
-    'changedAt': 1752742577.5786905, 'isTopGroup': True, 
-    'triggerUuid': 'd8bb08692722451b36a4450816534b37'}}
-'''
-
-

@@ -1,8 +1,8 @@
 import json
-from config import load_env
-from salesforce import get_salesforce_access_token, fetch_salesforce_records
-from monday import get_monday_items, create_or_update_monday_item
-from sync_utils import get_last_sync_time
+from salesforce_monday_sync.salesforce_to_monday.config import load_env
+from salesforce_monday_sync.salesforce_to_monday.salesforce import get_salesforce_access_token, fetch_salesforce_records
+from salesforce_monday_sync.salesforce_to_monday.monday import get_monday_items, create_or_update_monday_item
+from salesforce_monday_sync.salesforce_to_monday.sync_utils import get_last_sync_time
 
 def sync_salesforce_to_monday(board_config_path):
 
