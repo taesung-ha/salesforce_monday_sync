@@ -1,5 +1,5 @@
-# Salesforce ↔ Monday.com Synchronization Platform  
-_A Serverless CRM Integration Pipeline with Real-Time Sync & Automation_
+# 🌀 CRM Sync System: One-way Real-time Sync (Monday → Salesforce) + One-time Migration (Salesforce → Monday)
+> A CRM integration system that performs real-time data synchronization from Monday.com to Salesforce via webhook-triggered AWS Lambda, with a one-time Salesforce-to-Monday data migration. Built with Python, PostgreSQL, and Telegram-based error monitoring.
 
 ---
 
