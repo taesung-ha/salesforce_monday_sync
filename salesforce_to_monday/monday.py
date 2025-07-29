@@ -63,7 +63,7 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
                 parsed_value = None
                 
                 if col_type == 'status' and value:
-                    # 예: {"index": 0, "post_id": null, "changed_at": "..."}
+                    # payload example {"index": 0, "post_id": null, "changed_at": "..."}
                     value = json.loads(value)
                     parsed_value = {"label": text, "index": value.get("index")}
 
@@ -153,19 +153,19 @@ def format_value_for_column(value, col_type):
         return str(value)  # fallback: treat as text
     
 def is_same_value(a, b):
-    # 둘 다 "빈 값"이면 같다고 처리
+    # if both data are null, process them as NULL. 
     empty_like = [None, "", {}, {"label": None}, {"labels": []}]
     if a in empty_like and b in empty_like:
         return True
 
-    # status / color / dropdown: label 기반 비교
+    # status / color / dropdown: label based comparison
     if isinstance(a, dict) and isinstance(b, dict):
         if "label" in a or "label" in b:
             return a.get("label") == b.get("label")
         if "labels" in a or "labels" in b:
             return a.get("labels") == b.get("labels")
 
-    # 기본 비교
+    # base type comparison
     return a == b
 
 def create_or_update_monday_item(record, monday_items, monday_board_id, monday_token, field_mapping):
@@ -179,13 +179,13 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
     else:
         item_name = record.get('Name') or f"{record.get('FirstName', '')} {record.get('LastName', '')}".strip()
 
-    # Step 1: 변환 대상 만들기
-    column_values = {} #이 monday컬럼에는 이 값이 들어가야해~ 하는 dict
-    for monday_col_id, sf_field in field_mapping.items(): # 가령 monday_col_id = "text_mkrykrc2", sf_field = "Name"
-        value = record.get(sf_field, "") # value = record.get('Name', "") = 'Stesting Stesstee'
-        # 기존 monday item이 있다면 type 재활용
-        if salesforce_id in monday_items: # 00QUO00000F8FAv2AN가 monday_items에 있다면
-            col_type = monday_items[salesforce_id]["column_values"].get(monday_col_id, {}).get("type", "text") #현재 Stesstee의 컬럼 타입을 가져옴
+    # Step 1: Process desired column values
+    column_values = {} 
+    for monday_col_id, sf_field in field_mapping.items():
+        value = record.get(sf_field, "") 
+        
+        if salesforce_id in monday_items: 
+            col_type = monday_items[salesforce_id]["column_values"].get(monday_col_id, {}).get("type", "text") 
         else:
             col_type = "text"
             
@@ -201,8 +201,6 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
                 column_values[monday_col_id] = {"labels": []}
         else:
             column_values[monday_col_id] = format_value_for_column(value, col_type)
-        #column_values = {monday_col_id: {"label": value}}
-        #GraphQL 형식 맞춰서 Salesforce로부터 받은 data를 monday.com의 컬럼 type에 맞게 Monday.com으로 밀어넣으려고. 
         
     # Step 2: Create
     if salesforce_id not in monday_items:
@@ -233,7 +231,7 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
     change_log = []
     updated = {}
     
-    for k, v in column_values.items(): #column_values는 salesforce에서 가져온 값이고, current는 monday_items에서 가져온 값임
+    for k, v in column_values.items(): 
         current_val = current.get(k, {}).get("value")
         
         if is_same_value(current_val, v):

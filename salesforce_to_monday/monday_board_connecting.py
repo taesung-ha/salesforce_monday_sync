@@ -54,7 +54,7 @@ def fetch_items_with_column(board_id, value_col_id, extra_col_id=None):
         if cursor is None:
             break
 
-    print(f"📊 총 {total_count}개 항목 중 {empty_count}개 항목에 '{value_col_id}' 값이 없습니다.")
+    print(f"📊 Out of {total_count} items, {empty_count} items are missing the '{value_col_id}' value.")
     return items
 # %%
 def connect_items(source_board_id, target_board_id, source_key_col_id, target_key_col_id, connect_col_id):

@@ -3,22 +3,6 @@
 import os
 
 def load_env():
-    try:
-        # Streamlit
-        import streamlit as st
-        if hasattr(st, "secrets") and "SF_CLIENT_ID" in st.secrets:
-            SF_CLIENT_ID = st.secrets["SF_CLIENT_ID"]
-            SF_CLIENT_SECRET = st.secrets["SF_CLIENT_SECRET"]
-            SF_USERNAME = st.secrets["SF_USERNAME"]
-            SF_PASSWORD = st.secrets["SF_PASSWORD"]
-            MONDAY_TOKEN = st.secrets["MONDAY_TOKEN"]
-            return SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD, MONDAY_TOKEN
-    except Exception:
-        pass
-
-    # when not using Streamlit, load from .env file
-    from dotenv import load_dotenv
-    load_dotenv()
 
     SF_CLIENT_ID = os.getenv("SF_CLIENT_ID")
     SF_CLIENT_SECRET = os.getenv("SF_CLIENT_SECRET")
