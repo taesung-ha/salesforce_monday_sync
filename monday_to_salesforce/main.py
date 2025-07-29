@@ -36,7 +36,7 @@ async def monday_webhook(req: Request):
         data = await req.json()
         print("📥 Received from Monday:", data)
 
-        # Webhook 검증 (challenge 처리)
+        # Webhook check (challenge processing)
         if "challenge" in data:
             return JSONResponse(content={"challenge": data["challenge"]})
 
@@ -45,7 +45,7 @@ async def monday_webhook(req: Request):
         event_type = event.get("type")
         column_type = event.get("columnType", "")
 
-        # ENTITY_CONFIG에서 entity_type 식별
+        # Identify entity_type from ENTITY_CONFIG
         entity_type = None
         for name, config in ENTITY_CONFIG.items():
             if config["board_id"] == board_id:
@@ -56,7 +56,7 @@ async def monday_webhook(req: Request):
             print(f"⚠️ Unknown board: {board_id}")
             return {"status": "Skipped: Unknown board"}
 
-        # 이벤트 타입별 핸들러 호출
+        # Call handler for each event type
         if event_type == "update_column_value" and column_type == 'board-relation':
             return await handle_board_connection(event, entity_type)
         elif event_type == "update_column_value":
