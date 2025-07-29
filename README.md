@@ -2,7 +2,7 @@
 > A two-part CRM synchronization project using Python, PostgreSQL, AWS Lambda, RDS, GitHub Actions, and both REST & GraphQL APIs. Built to automate real-time updates from Monday.com to Salesforce and perform one-time data migration from Salesforce to Monday.com.
 
 ---
-📚 Table of Contents
+## 📚 Table of Contents
 
 - Overview
 
