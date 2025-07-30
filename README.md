@@ -68,23 +68,7 @@ During this process, the project handled numerous field-level and structural mis
 
 ---
 ## 🪡 System Architecture
-```mermaid
-graph TD
-    subgraph Part I: Real-time (Monday → Salesforce)
-    A[Monday Webhook (item update/create/delete)] --> B[API Gateway]
-    B --> C[AWS Lambda]
-    C --> D[Salesforce API (Lead/Account/Contact/Opportunity)]
-    C --> E[PostgreSQL (logs)]
-    C --> F[Telegram Notification (on error)]
-    end
-
-    subgraph Part II: One-time (Salesforce → Monday)
-    G[GitHub Actions Trigger] --> H[Salesforce API (GET)]
-    H --> I[Python Sync Script]
-    I --> J[Monday API (GraphQL mutations)]
-    I --> E
-    end
-```
+<img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/f4bc5e55-940d-46df-90fa-6aa0e8c7f7e9" />
 ---
 ## Part I: Initial Migration (Salesforce → Monday.com)
 ### Batch Workflow
