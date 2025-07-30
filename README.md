@@ -69,7 +69,7 @@ During this process, the project handled numerous field-level and structural mis
 ---
 ## 🪡 System Architecture
 
-<img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/e1f42793-eae8-410a-8a12-881d800eb9c5" />
+<img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/38265745-45fb-430d-bdf5-e47d868823d0" />
 
 ---
 ## 🔄 Part I: Initial Migration (`salesforce_to_monday`)
@@ -98,7 +98,7 @@ During this process, the project handled numerous field-level and structural mis
 
 This robust pipeline accounts for object hierarchies, field naming discrepancies, and required data transformations, dramatically reducing historical data inconsistency and sync errors.
 
-### Sample Code
+### Sample Code (Updating Monday's column value)
 ```python
 #monday.py
 import json
@@ -263,10 +263,9 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
 
 - Includes context such as pulseId, object ID, error trace
 
-### Code Overview
 
 
-### Sample Code (Update Column Value)
+### Sample Code (Updating Salesforce's Column Value)
 ```python
 #entity_handler.py
 from config.entity_config import ENTITY_CONFIG
