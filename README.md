@@ -52,7 +52,7 @@ One-time Migration from Salesforce → Monday (scheduled batch via GitHub Action
 
 During this process, the project handled numerous field-level and structural mismatches between the two systems, carefully mapping and transforming data across platforms.
 
->💡 This real-time synchronization between Monday and Salesforce is difficult to implement even with a paid Monday Enterprise plan, and typically requires costly third-party integrations. By building the full system in-house through custom code, this project saved the organization an estimated **$7,000–$18,000** annually, while delivering reliable automation tailored to their exact business logic. It also eliminated the need for manual data entry across platforms, freeing up valuable time for the operations team and reducing human error. This represents a major cost-saving achievement for a nonprofit organization, where budget efficiency is especially critical.
+>💡 This real-time synchronization between Monday and Salesforce is difficult to implement even with a paid Monday Enterprise plan, and typically requires costly third-party integrations. By building the full system in-house through custom code, this project saved the organization an estimated **$7,000–$18,000** annually, while delivering reliable automation tailored to their exact business logic. It also eliminated the need for manual data entry across platforms, freeing up valuable time for the operations team and reducing human error. This represents **a major cost-saving achievement for a nonprofit organization**, where budget efficiency is especially critical.
 
 ---
 
@@ -67,6 +67,7 @@ During this process, the project handled numerous field-level and structural mis
 | Event System | Monday.com Webhooks (multiple types; `update_column_value`, `create_pulse`, `update_name`, `delete_pulse`)
 
 ---
+## 🪡 System Architecture
 ```mermaid
 graph TD
     subgraph Part I: Real-time (Monday → Salesforce)
@@ -85,46 +86,108 @@ graph TD
     end
 ```
 ---
-## 🏗️ Architecture
-Monday.com ←→ AWS API Gateway ←→ AWS Lambda ←→ Salesforce <br>
-↓ <br>
-PostgreSQL <br>
-↓ <br>
-AWS S3 (Backup)
+## Part I: Initial Migration (Salesforce → Monday.com)
+### Batch Workflow
+1. GitHub Actions schedules a weekly run.
+
+2. Python script authenticates via OAuth and fetches Salesforce data.
+
+3. Custom schema mapping adapts records for Monday GraphQL.
+
+4. Batched GraphQL mutations write to Monday.com boards.
+
+5. Execution details logged in PostgreSQL for auditability.
 
 ---
 
-## 🛠 Tech Stack
-- **Languages:** Python, SQL  
-- **Cloud:** AWS Lambda, API Gateway, EventBridge, S3  
-- **Databases:** PostgreSQL  
-- **APIs:** Salesforce REST API, Monday GraphQL API  
-- **DevOps:** Docker, GitHub Actions (CI/CD)  
+
+## 📦 Part II: Real-Time Synchronization (Monday.com → Salesforce)
+### Event Pipeline
+1. Monday webhook fires on item update, rename, creation, or deletion.
+
+2. Payload hits AWS API Gateway and is routed to Lambda.
+
+3. Lambda parses event type and dispatches accordingly.
+
+4. Business logic resolves data transformation and API invocation.
+
+4. Salesforce objects (Lead/Account/Contact/Opportunity) are updated.
+
+5. PostgreSQL logs event metadata and response status.
+
+6. Telegram sends alerts for critical failures.
 
 ---
 
-## ⚡ How It Works
-1. **Webhook Trigger:**  
-   - Monday.com or Salesforce sends an event → API Gateway receives the payload.
-2. **Lambda Processing:**  
-   - Validates and transforms data  
-   - Applies mapping logic (using PostgreSQL tables)  
-   - Updates corresponding system via API  
-3. **Logging & Backup:**  
-   - Stores sync logs in PostgreSQL  
-   - Pushes backup to AWS S3  
-4. **Alerting:**  
-   - Errors or anomalies trigger Telegram notifications for real-time monitoring  
+## 🤖 Payload Schemas
+### Monday → Salesforce
+```json
+{
+  "event": {
+    "app": "monday",
+    "type": "update_column_value",
+    "triggerTime": "2025-07-24T09:12:56.368Z",
+    "subscriptionId": "*****",
+    "isRetry": false,
+    "userId": "*****",
+    "originalTriggerUuid": null,
+    "boardId": "*****",
+    "groupId": "*****",
+    "pulseId": "*****",
+    "pulseName": "*****",
+    "columnId": "*****",
+    "columnType": "text",
+    "columnTitle": "*****",
+    "value": {
+      "value": "Data Engineer"
+    },
+    "previousValue": {
+      "value": "Applied Statistics Student"
+    },
+    "changedAt": "*****",
+    "isTopGroup": true,
+    "triggerUuid": "*****"
+  }
+}
+
+```
+
+### Salesforce → Monday.com
+```json
+{
+  "attributes": {
+    "type": "Lead",
+    "url": "/services/data/v58.0/sobjects/Opportunity/REDACTED_OPPORTUNITY_ID"
+  },
+  "Id": "REDACTED_Lead_ID",
+  "Name": "REDACTED_LEAD_NAME"
+}
+
+```
+---
+## 📊 Outcome & Impact
+- 🔁 Full replacement of manual syncing between CRM systems
+
+- 🧠 Reduced 90% of weekly cognitive and operational overhead
+
+- 🏷 Avoided subscription costs for Monday Enterprise plan & external connectors
+
+- 🔎 Ensured lifecycle traceability of leads and deals
+
+- 🧾 Production-grade logging enabled debugging & analytics
+
+---
+## 💰 Cost Efficiency Analysis
+- Estimated savings: $7,000–$18,000 annually (licensing + integrations)
+
+- Labor savings: Eliminated 4–6 hours/week of manual data entry
+
+- Strategic value: Empowered non-technical users to drive BD pipeline without developer dependency
+
+- Organizational fit: A lean, scalable automation solution designed for nonprofits operating with budget constraints
 
 ---
 
-## 🚀 Getting Started
-
-### ✅ Prerequisites
-- Python 3.9+
-- AWS account with Lambda & API Gateway enabled
-- Docker installed
-- Salesforce & Monday.com API credentials
 
 ### ✅ Installation
 ```bash

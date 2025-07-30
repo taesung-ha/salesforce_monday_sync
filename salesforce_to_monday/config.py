@@ -1,9 +1,10 @@
 # config.py
 #%%
 import os
-
+from dotenv import load_dotenv
 def load_env():
-
+    load_dotenv()
+    
     SF_CLIENT_ID = os.getenv("SF_CLIENT_ID")
     SF_CLIENT_SECRET = os.getenv("SF_CLIENT_SECRET")
     SF_USERNAME = os.getenv("SF_USERNAME")
