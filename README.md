@@ -69,7 +69,7 @@ During this process, the project handled numerous field-level and structural mis
 ---
 ## 🪡 System Architecture
 
-<img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/38265745-45fb-430d-bdf5-e47d868823d0" />
+<img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/70acdf4a-40bb-4167-96b2-4fbb05a5ea28" />
 
 ---
 ## 🔄 Part I: Initial Migration (`salesforce_to_monday`)
