@@ -68,7 +68,9 @@ During this process, the project handled numerous field-level and structural mis
 
 ---
 ## 🪡 System Architecture
-<img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/f4bc5e55-940d-46df-90fa-6aa0e8c7f7e9" />
+
+<img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/38265745-45fb-430d-bdf5-e47d868823d0" />
+
 ---
 ## Part I: Initial Migration (Salesforce → Monday.com)
 ### Batch Workflow
