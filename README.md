@@ -46,10 +46,9 @@ Salesforce continues to be used as the primary backend data store, with only a m
 
 To enable this transition and maintain system consistency, this project implemented:
 
-1. Real-time Sync from Monday → Salesforce (Webhook-triggered via AWS Lambda), to reflect changes made by operations teams back into Salesforce.
+1. **Real-Time Synchronization (Monday → Salesforce)**: Triggered via webhooks, this module used AWS Lambda and API Gateway to reflect user-driven changes from Monday.com back into Salesforce.
 
-2. One-time Migration from Salesforce → Monday (scheduled batch via GitHub Actions + GraphQL), to backfill initial data.
-
+2. **Batch Data Migration (Salesforce → Monday.com)**: Deployed via GitHub Actions, this component batch-transferred historical data using Salesforce REST APIs and Monday GraphQL mutations.
 During this process, the project handled numerous field-level and structural mismatches between the two systems, carefully mapping and transforming data across platforms.
 
 >💡 This real-time synchronization between Monday and Salesforce is difficult to implement even with a paid Monday Enterprise plan, and typically requires costly third-party integrations. By building the full system in-house through custom code, this project saved the organization an estimated **$7,000–$18,000** annually, while delivering reliable automation tailored to their exact business logic. It also eliminated the need for manual data entry across platforms, freeing up valuable time for the operations team and reducing human error. This represents **a major cost-saving achievement for a nonprofit organization**, where budget efficiency is especially critical.
@@ -73,7 +72,7 @@ During this process, the project handled numerous field-level and structural mis
 <img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/38265745-45fb-430d-bdf5-e47d868823d0" />
 
 ---
-## 🔄 Part I: Initial Migration (Salesforce → Monday.com)
+## 🔄 Part I: Initial Migration (`salesforce_to_monday`)
 ### Batch Workflow
 1. GitHub Actions schedules a weekly run.
 
@@ -85,8 +84,128 @@ During this process, the project handled numerous field-level and structural mis
 
 5. Execution details logged in PostgreSQL for auditability.
 
----
-## 📦 Part II: Real-Time Synchronization (Monday.com → Salesforce)
+### Codebase Summary
+
+- The `mapping_config` directory documents detailed field correspondence between Salesforce objects and Monday.com board columns.
+
+- `salesforce.py` manages OAuth authentication and data retrieval via Salesforce REST API.
+
+- `monday.py` handles board data extraction and update through Monday’s GraphQL interface. It compares fetched data and conditionally triggers create/update logic.
+
+- `main.py`, `sync.py`, `sync_account`, `sync_utils` orchestrates both modules, performing unified synchronization logic across all CRM entities.
+
+- `monday_board_connecting.py` reconstructs inter-object relational links (e.g., Lead → Opportunity → Account) in Monday boards to mirror Salesforce's native relationships.
+
+This robust pipeline accounts for object hierarchies, field naming discrepancies, and required data transformations, dramatically reducing historical data inconsistency and sync errors.
+
+### Sample Code
+```python
+#monday.py
+import json
+def create_or_update_monday_item(record, monday_items, monday_board_id, monday_token, field_mapping):
+    import requests
+    salesforce_id = record.get("Id")
+    if not salesforce_id:
+        return
+
+    if monday_board_id == "9378000505":
+        item_name = record.get('Company')
+    else:
+        item_name = record.get('Name') or f"{record.get('FirstName', '')} {record.get('LastName', '')}".strip()
+
+    # Step 1: Process desired column values
+    column_values = {} 
+    for monday_col_id, sf_field in field_mapping.items():
+        value = record.get(sf_field, "") 
+        
+        if salesforce_id in monday_items: 
+            col_type = monday_items[salesforce_id]["column_values"].get(monday_col_id, {}).get("type", "text") 
+        else:
+            col_type = "text"
+            
+        if col_type == "dropdown":
+            if isinstance(value, str):
+                split_labels = [v.strip() for v in value.split(';')]
+                split_labels = [DROPDOWN_VALUE_MAP.get(v.strip(), v.strip()) for v in split_labels]
+                column_values[monday_col_id] = {"labels": split_labels}
+            elif isinstance(value, list):
+                mapped_list = [DROPDOWN_VALUE_MAP.get(v.strip(), v.strip()) for v in value]
+                column_values[monday_col_id] = {"labels": mapped_list}
+            else:
+                column_values[monday_col_id] = {"labels": []}
+        else:
+            column_values[monday_col_id] = format_value_for_column(value, col_type)
+        
+    # Step 2: Create
+    if salesforce_id not in monday_items:
+        query = '''
+        mutation ($boardId: ID!, $itemName: String!, $columnValues: JSON!) {
+            create_item (board_id: $boardId, item_name: $itemName, column_values: $columnValues) {
+                id
+            }
+        }
+        '''
+        variables = {
+            "boardId": monday_board_id,
+            "itemName": item_name,
+            "columnValues": json.dumps(column_values)
+        }
+
+        r = requests.post(MONDAY_API_URL, headers={"Authorization": monday_token}, json={"query": query, "variables": variables})
+        response = r.json()
+        if "errors" in response:
+            print(f"❌ Failed to create item: {item_name}")
+            print(response["errors"])
+        else:
+            print(f"✅ Created: {item_name}", flush=True)
+        return
+
+    # Step 3: Update
+    current = monday_items[salesforce_id]['column_values']
+    change_log = []
+    updated = {}
+    
+    for k, v in column_values.items(): 
+        current_val = current.get(k, {}).get("value")
+        
+        if is_same_value(current_val, v):
+            continue
+        else:
+            updated[k] = v
+            change_log.append(f"    - {k}: {current_val} → {v}")
+
+    if updated:
+        query = '''
+        mutation ($itemId: ID!, $boardId: ID!, $columnValues: JSON!) {
+            change_multiple_column_values(item_id: $itemId, board_id: $boardId, column_values: $columnValues) {
+                id
+            }
+        }
+        '''
+        variables = {
+            "itemId": monday_items[salesforce_id]['item_id'],
+            "boardId": monday_board_id,
+            "columnValues": json.dumps(updated)
+        }
+        r = requests.post(MONDAY_API_URL, headers={"Authorization": monday_token}, json={"query": query, "variables": variables})
+        response = r.json()
+        if "errors" in response or "data" not in response:
+            print(f"❌ Update error for {item_name}")
+            print(json.dumps(response.get("errors", {}), indent=2))
+            
+        else:
+            updated_fields = ', '.join(updated.keys())
+            print(f"🔁 Updated: {item_name}", flush=True)
+            for line in change_log:
+                print(line, flush=True)
+                
+    else:
+        print(f"⏩ Skipped (no change): {item_name}", flush=True)
+```
+
+---  
+
+## 📦 Part II: Real-Time Synchronization (`monday_to_salesforce`)
 ### Event Pipeline
 1. Monday webhook fires on item update, rename, creation, or deletion.
 
@@ -110,17 +229,44 @@ During this process, the project handled numerous field-level and structural mis
   -  Create or Update Salesforce Lead
   - Instantiate associated Account, Contact, and Opportunity.
 - Sync Back:
-  - Status changes (e.g., "Follow-up", "Quote", "MOU") propagate to corresponding Salesforce Opportunity stage.
+  - Status changes (e.g., "Follow-up", "Quote", "MOU") propagate to corresponding Salesforce Opportunity stage. 
+
 > This unified pipeline ensures CRM integrity across departments without requiring dual entry.
 
+### Codebase Summary
+- **services/**
+
+   - `salesforce_services.py`: Handles authentication and CRUD operations for Salesforce.
+
+   - `monday_services.py`: Handles Monday GraphQL operations and integrates new Salesforce IDs.
+
+   - `mapping_service.py`: Maintains mapping tables of Monday item IDs and Salesforce IDs.
+
+   - `log_service.py`: Stores webhook logs into PostgreSQL.
+
+- **handlers/entity_handler/**
+
+   - Contains Lambda logic per event type, calling appropriate service logic per CRUD scenario.
+
+- **main.py**
+
+  - Main entry point for Lambda. Routes incoming Monday webhooks to the corresponding handler.
+
+- **utils/utils.py**
+
+  - Helper functions reused across modules.
+
 ### Observability
-- Logs written to sync_logs and error_logs tables in PostgreSQL
+- Logs written to `item_sf_mapping` and `webhook_logs` tables in PostgreSQL
 
 - Error-level events trigger Telegram messages via bot API
 
 - Includes context such as pulseId, object ID, error trace
 
-### Sample Code (`update column value`)
+### Code Overview
+
+
+### Sample Code (Update Column Value)
 ```python
 #entity_handler.py
 from config.entity_config import ENTITY_CONFIG
@@ -221,58 +367,70 @@ async def handle_update_column(event, entity_type):
   "Id": "REDACTED_Lead_ID",
   "Name": "REDACTED_LEAD_NAME"
 }
-
 ```
 ---
-## 📊 Outcome & Impact
-- 🔁 Full replacement of manual syncing between CRM systems
+### 🧠 Outcome & Impact
 
-- 🧠 Reduced 90% of weekly cognitive and operational overhead
+The CRM migration from Salesforce to Monday.com catalyzed a strategic transformation in business development (BD) operations. By shifting to Monday.com’s lightweight, intuitive UI, frontline staff with limited technical expertise could now manage BD workflows more autonomously and collaboratively. This transition significantly lowered the operational barrier imposed by Salesforce’s complex interface.
 
-- 🏷 Avoided subscription costs for Monday Enterprise plan & external connectors
+However, because Monday.com lacks the database robustness of Salesforce, a full migration of historical CRM data was impractical. Therefore, the system was designed to preserve Salesforce as the authoritative backend while relocating only active, workflow-relevant BD data to Monday.com. This necessitated a real-time synchronization system—ensuring operational agility without sacrificing data integrity.
 
-- 🔎 Ensured lifecycle traceability of leads and deals
+Notably, even a Monday.com Enterprise plan does not natively support full bidirectional CRM synchronization with Salesforce. Most organizations resort to expensive third-party tools like Integromat, Tray.io, or Zapier, which offer limited customization and cost anywhere from $7,000–$18,000 annually, depending on volume and use cases. This project replaced that dependency entirely with an in-house, developer-built pipeline tailored to the organization's exact BD lifecycle.
 
-- 🧾 Production-grade logging enabled debugging & analytics
+The business impact was substantial:
 
----
-## 💰 Cost Efficiency Analysis
-- Estimated savings: $7,000–$18,000 annually (licensing + integrations)
+- 🔁 Replaced fragmented, error-prone manual data entry across systems with automated synchronization.
 
-- Labor savings: Eliminated 4–6 hours/week of manual data entry
+- ⌛ Saved 4–6 hours of weekly manual syncing labor, reducing operational and cognitive burden by over 90%.
 
-- Strategic value: Empowered non-technical users to drive BD pipeline without developer dependency
+- 💰 Avoided $7,000–$18,000/year in software licensing and integration costs.
 
-- Organizational fit: A lean, scalable automation solution designed for nonprofits operating with budget constraints
+- 👩‍💼 Enabled non-technical teams to manage BD operations without reliance on developers or Salesforce administrators.
 
----
-## 🧪 Testing & Deployment
-- ✅ Unit tests written in tests/test_mapper.py
+- 🔍 Ensured deal lifecycle traceability, with Salesforce retaining canonical records while Monday offered a fluid operational interface.
 
-- 🔧 Local testing via ngrok + Postman
+- 🧾 Implemented production-grade observability (logging, error alerts) for robust auditability and debugging.
 
-- 🚀 Deployed via GitHub Actions → AWS Lambda
+- 🧩 Achieved a scalable, budget-conscious CRM automation model, aligned with the lean and resource-constrained nature of nonprofit environments.
 
-- 🔐 Credentials stored in Lambda environment variables (IAM-protected)
+- By building this from the ground up using Python, AWS Lambda, GraphQL, and PostgreSQL, the system delivered not only cost efficiency but also long-term maintainability and strategic autonomy. For nonprofits, where every dollar and hour saved directly impacts mission delivery, this integration offered both tactical relief and operational transformation.
 
 ---
 ## 🧭 Project Structure
-```pgsql
-crm-sync/
-├── lambda/
-│   ├── handler.py
-│   ├── mapping.py
-│   └── utils/
-│       └── telegram.py
-├── migration/
-│   └── sf_to_monday.py
-├── logs/
-│   └── log_sample.csv
-├── tests/
-│   └── test_mapper.py
-├── diagrams/
-│   └── architecture.png
-├── requirements.txt
+```python
+# For brevity, only the core components essential to the synchronization logic are listed below.
+
+salesforce_monday_sync/
+├── monday_to_salesforce/
+│   ├── Dependencies
+│   ├── config
+│   │    └── config.py
+│   │    └── entity_config.py
+│   ├── handlers
+│   │    └── entity_handler.py
+│   ├── services/
+│   │    └── log_service.py
+│   │    └── mapping_service.py
+│   │    └── monday_service.py
+│   │    └── salesforce_service.py
+│   ├── dat_migration.py
+│   ├── main.py
+│   └── requirements.txt
+├── salesforce_to_monday/
+│   ├── mapping_config
+│   │   └── account.json
+│   │   └── contact.json
+│   │   └── lead.json
+│   │   └── opportunity.json
+│   ├── config.py
+│   ├── main.py
+│   ├── monday.py
+│   ├── monday_board_connecting.py
+│   ├── salesforce.py
+│   ├── sync.py
+│   ├── sync_account.py
+│   ├── sync_utils.py
+│   └── requirements.txt
 └── README.md
 ```
 ---
@@ -287,17 +445,7 @@ crm-sync/
 - Support custom field mapping via config file
 - Implement async retry mechanism for failed API calls
 
-
-
-### ✅ Installation
-```bash
-# Clone the repository
-git clone https://github.com/taesungha/salesforce-monday-sync.git
-cd salesforce-monday-sync
-
-# Install dependencies
-pip install -r requirements.txt
-```
+---
 
 ## 🔍 Key Highlights
 - ✔ **Reduced sync latency** from `60s → <10s`  
