@@ -72,7 +72,7 @@ During this process, the project handled numerous field-level and structural mis
 <img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/38265745-45fb-430d-bdf5-e47d868823d0" />
 
 ---
-## Part I: Initial Migration (Salesforce → Monday.com)
+## 📦 Part I: Initial Migration (Salesforce → Monday.com)
 ### Batch Workflow
 1. GitHub Actions schedules a weekly run.
 
@@ -173,6 +173,47 @@ During this process, the project handled numerous field-level and structural mis
 - Organizational fit: A lean, scalable automation solution designed for nonprofits operating with budget constraints
 
 ---
+## 🧪 Testing & Deployment
+- ✅ Unit tests written in tests/test_mapper.py
+
+- 🔧 Local testing via ngrok + Postman
+
+- 🚀 Deployed via GitHub Actions → AWS Lambda
+
+- 🔐 Credentials stored in Lambda environment variables (IAM-protected)
+
+---
+## 🧭 Project Structure
+```pgsql
+crm-sync/
+├── lambda/
+│   ├── handler.py
+│   ├── mapping.py
+│   └── utils/
+│       └── telegram.py
+├── migration/
+│   └── sf_to_monday.py
+├── logs/
+│   └── log_sample.csv
+├── tests/
+│   └── test_mapper.py
+├── diagrams/
+│   └── architecture.png
+├── requirements.txt
+└── README.md
+```
+---
+## 📹 Demo
+▶️ Watch the 3-min demo <br>
+→ Demonstrates real-time sync, database logging, and error alerts in action.
+
+---
+## 📌 Future Improvements
+- Implement bidirectional sync logic (conflict resolution)
+- Add Slack integration for success alerts
+- Support custom field mapping via config file
+- Implement async retry mechanism for failed API calls
+
 
 
 ### ✅ Installation
