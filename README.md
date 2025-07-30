@@ -244,7 +244,7 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
 
    - `log_service.py`: Stores webhook logs into PostgreSQL.
 
-- **handlers/entity_handler/**
+- **handlers/entity_handler.py**
 
    - Contains Lambda logic per event type, calling appropriate service logic per CRUD scenario.
 
