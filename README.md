@@ -4,11 +4,11 @@
 ---
 ## 📚 Table of Contents
 
-- Overview
+- [Overview](#overview)
 
-- Tech Stack
+- [Tech Stack](#tech-stack)
 
-- System Diagram
+- [System Architecture](#system-architecture)
 
 - Part I: Real-time Sync (Monday → Salesforce)
 
