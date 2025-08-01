@@ -6,6 +6,7 @@ from services.log_service import log_to_db, send_telegram_alert
 from services.mapping_service import save_mapping, get_sf_id, delete_mapping
 from utils.transformer import split_name, get_added_and_removed_ids
 from datetime import datetime, timezone, timedelta
+import asyncio
 
 async def handle_update_column(event, entity_type):
     config = ENTITY_CONFIG[entity_type]
@@ -178,16 +179,20 @@ async def handle_board_connection(event, entity_type):
         return {"status": "⏩ Skipped: No link mapping"}
 
     target_entity, sf_field = link_mapping
-
-    # Helper function: Get Target SF ID
-    def get_target_sf_id(item_id, target_entity):
-        target_config = ENTITY_CONFIG[target_entity]
-        target_item = get_monday_item_details(item_id, target_config["board_id"])
-        return target_item.get("event", {}).get("columnValues", {}).get(target_config["sf_id_column"], {}).get("value", "")
+    target_config = ENTITY_CONFIG[target_entity]
+    
+    async def wait_for_sf_id(item_id, board_id, sf_id_column, max_retries=3, delay=2):
+        for attempt in range(max_retries):
+            item_data = get_monday_item_details(item_id, board_id)
+            sf_id = item_data.get("event", {}).get("columnValues", {}).get(sf_id_column, {}).get("value", "")
+            if sf_id:
+                return sf_id
+            await asyncio.sleep(delay * (2 ** attempt))
+        return None
 
     # ✅ Process added links
     for target_item_id in added_ids:
-        target_sf_id = get_target_sf_id(target_item_id, target_entity)
+        target_sf_id = await wait_for_sf_id(target_item_id, target_config['board_id'], target_config["sf_id_column"])
         if target_sf_id:
             success = update_salesforce_record(config['object_name'], source_sf_id, {sf_field: target_sf_id})
             log_to_db('update_relation_add', board_id, source_item_id, column_id, "success" if success else "failed",
@@ -196,12 +201,13 @@ async def handle_board_connection(event, entity_type):
                 send_telegram_alert(f"❌ Failed to link {target_entity} {target_sf_id} to {entity_type} {source_sf_id}")
             print(f"{'✅' if success else '❌'} Linked {target_entity} {target_sf_id} to {entity_type} {source_sf_id}")
         else:
+            print("⚠️ No Salesforce ID for target item:", target_item_id)
             log_to_db('update_relation_add', board_id, source_item_id, column_id, "skipped",
                       response_data={"msg": f"No Salesforce ID for target {target_item_id}"})
 
     # ✅ Process removed links
     for target_item_id in removed_ids:
-        target_sf_id = get_target_sf_id(target_item_id, target_entity)
+        target_sf_id = await wait_for_sf_id(target_item_id, target_config['board_id'], target_config["sf_id_column"])
         success = update_salesforce_record(config['object_name'], source_sf_id, {sf_field: None})
         log_to_db('update_relation_remove', board_id, source_item_id, column_id, "success" if success else "failed",
                   response_data={"source_sf_id": source_sf_id, "removed_target_sf_id": target_sf_id, "field": sf_field})

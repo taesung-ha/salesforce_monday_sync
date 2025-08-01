@@ -6,7 +6,6 @@ from handlers.entity_handler import handle_board_connection, handle_update_colum
 from services.mapping_service import create_mapping_table
 from services.log_service import create_log_table
 from config.entity_config import ENTITY_CONFIG
-from config.config import SF_CLIENT_ID, SF_CLIENT_SECRET, SF_USERNAME, SF_PASSWORD, MONDAY_TOKEN, DB_CONFIG
 import traceback
 
 print("✅ Lambda started execution")
