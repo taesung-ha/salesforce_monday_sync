@@ -261,8 +261,8 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
 <img width="1512" height="1200" alt="Image" src="https://github.com/user-attachments/assets/38afdeba-b99f-4c1d-a2c7-e236695809fe" />  
 <img width="2282" height="1246" alt="Image" src="https://github.com/user-attachments/assets/a0cb3ec4-5ffb-487c-88b0-3f7e4534fb17" />
 
-- Error-level events trigger Telegram messages via bot API
-
+- Error-level events trigger Telegram messages via bot API  
+![Image](https://github.com/user-attachments/assets/0f0d597e-5361-47ef-8681-e587083f8da5)
 - Includes context such as pulseId, object ID, error trace
 
 
