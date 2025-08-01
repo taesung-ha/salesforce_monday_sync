@@ -257,7 +257,9 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
   - Helper functions reused across modules.
 
 ### Observability
-- Logs written to `item_sf_mapping` and `webhook_logs` tables in PostgreSQL
+- Logs written to `item_sf_mapping` and `webhook_logs` tables in PostgreSQL  
+<img width="1512" height="1200" alt="Image" src="https://github.com/user-attachments/assets/38afdeba-b99f-4c1d-a2c7-e236695809fe" />  
+<img width="2282" height="1246" alt="Image" src="https://github.com/user-attachments/assets/a0cb3ec4-5ffb-487c-88b0-3f7e4534fb17" />
 
 - Error-level events trigger Telegram messages via bot API
 
