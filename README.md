@@ -4,29 +4,29 @@
 ---
 ## Table of Contents
 
-- [Overview](#-overview)
-- [Tech Stack](#-tech-stack)
-- [System Architecture](#-system-architecture)
-- [Part I: Initial Migration (`salesforce_to_monday`)](#-part-i-initial-migration-salesforce_to_monday)
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [System Architecture](#system-architecture)
+- [Part I: Initial Migration (`salesforce_to_monday`)](#part-i-initial-migration-salesforce_to_monday)
   - [Batch Workflow](#batch-workflow)
   - [Codebase Summary](#codebase-summary)
   - [Sample Code (Updating Monday's column value)](#sample-code-updating-mondays-column-value)
-- [Part II: Real-Time Synchronization (`monday_to_salesforce`)](#-part-ii-real-time-synchronization-monday_to_salesforce)
+- [Part II: Real-Time Synchronization (`monday_to_salesforce`)](#part-ii-real-time-synchronization-monday_to_salesforce)
   - [Event Pipeline](#event-pipeline)
   - [Domain Logic](#domain-logic)
   - [Codebase Summary](#codebase-summary-1)
   - [Observability](#observability)
   - [Sample Code (Updating Salesforce's column value)](#sample-code-updating-salesforces-column-value)
-- [Payload Schemas](#-payload-schemas)
+- [Payload Schemas](#payload-schemas)
   - [Monday → Salesforce](#monday--salesforce)
   - [Salesforce → Monday.com](#salesforce--mondaycom)
-- [Outcome & Impact](#-outcome--impact)
-- [Project Structure](#-project-structure)
-- [Demo](#-demo)
-- [Future Improvements](#-future-improvements)
-- [Key Highlights](#-key-highlights)
-- [Future Improvements (Roadmap)](#-future-improvements-roadmap)
-- [Contact](#-contact)
+- [Outcome & Impact](#outcome--impact)
+- [Project Structure](#project-structure)
+- [Demo](#demo)
+- [Future Improvements](#future-improvements)
+- [Key Highlights](#key-highlights)
+- [Future Improvements](#future-improvements)
+- [Contact](#contact)
 
 ---
 
@@ -82,7 +82,6 @@ During this process, the project handled numerous field-level and structural mis
 
 - [`salesforce.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/salesforce.py) manages OAuth authentication and data retrieval via Salesforce REST API.
 
-- `monday.py` handles board data extraction and update through Monday’s GraphQL interface. It compares fetched data and conditionally triggers create/update logic.
 - [`monday.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/monday.py) handles board data extraction and update through Monday’s GraphQL interface. It compares fetched data and conditionally triggers create/update logic.
 
 - [`main.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/main.py), [`sync.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/sync.py), [`sync_account`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/sync_account.py), [`sync_utils`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/sync_utils.py) orchestrates both modules, performing unified synchronization logic across all CRM entities.
