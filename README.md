@@ -78,15 +78,16 @@ During this process, the project handled numerous field-level and structural mis
 
 ### Codebase Summary
 
-- The `mapping_config` directory documents detailed field correspondence between Salesforce objects and Monday.com board columns.
+- The [`mapping_config`](https://github.com/taesung-ha/salesforce_monday_sync/tree/main/salesforce_to_monday/mapping_config) directory documents detailed field correspondence between Salesforce objects and Monday.com board columns.
 
-- `salesforce.py` manages OAuth authentication and data retrieval via Salesforce REST API.
+- [`salesforce.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/salesforce.py) manages OAuth authentication and data retrieval via Salesforce REST API.
 
 - `monday.py` handles board data extraction and update through Monday’s GraphQL interface. It compares fetched data and conditionally triggers create/update logic.
+- [`monday.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/monday.py) handles board data extraction and update through Monday’s GraphQL interface. It compares fetched data and conditionally triggers create/update logic.
 
-- `main.py`, `sync.py`, `sync_account`, `sync_utils` orchestrates both modules, performing unified synchronization logic across all CRM entities.
+- [`main.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/main.py), [`sync.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/sync.py), [`sync_account`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/sync_account.py), [`sync_utils`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/sync_utils.py) orchestrates both modules, performing unified synchronization logic across all CRM entities.
 
-- `monday_board_connecting.py` reconstructs inter-object relational links (e.g., Lead → Opportunity → Account) in Monday boards to mirror Salesforce's native relationships.
+- [`monday_board_connecting.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/salesforce_to_monday/monday_board_connecting.py) reconstructs inter-object relational links (e.g., Lead → Opportunity → Account) in Monday boards to mirror Salesforce's native relationships.
 
 This robust pipeline accounts for object hierarchies, field naming discrepancies, and required data transformations, dramatically reducing historical data inconsistency and sync errors.
 
@@ -226,25 +227,25 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
 > This unified pipeline ensures CRM integrity across departments without requiring dual entry.
 
 ### Codebase Summary
-- **services/**
+- **[`services/`](https://github.com/taesung-ha/salesforce_monday_sync/tree/main/monday_to_salesforce/services)**
 
-   - `salesforce_services.py`: Handles authentication and CRUD operations for Salesforce.
+   - [`salesforce_services.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/monday_to_salesforce/services/salesforce_service.py): Handles authentication and CRUD operations for Salesforce.
 
-   - `monday_services.py`: Handles Monday GraphQL operations and integrates new Salesforce IDs.
+   - [`monday_services.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/monday_to_salesforce/services/monday_service.py): Handles Monday GraphQL operations and integrates new Salesforce IDs.
 
-   - `mapping_service.py`: Maintains mapping tables of Monday item IDs and Salesforce IDs.
+   - [`mapping_service.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/monday_to_salesforce/services/mapping_service.py): Maintains mapping tables of Monday item IDs and Salesforce IDs.
 
-   - `log_service.py`: Stores webhook logs into PostgreSQL.
+   - [`log_service.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/monday_to_salesforce/services/log_service.py): Stores webhook logs into PostgreSQL.
 
-- **handlers/entity_handler.py**
+- **[`handlers/entity_handler.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/monday_to_salesforce/handlers/entity_handler.py)**
 
    - Contains Lambda logic per event type, calling appropriate service logic per CRUD scenario.
 
-- **main.py**
+- **[`main.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/monday_to_salesforce/main.py)**
 
   - Main entry point for Lambda. Routes incoming Monday webhooks to the corresponding handler.
 
-- **utils/utils.py**
+- **[`utils/transformer.py`](https://github.com/taesung-ha/salesforce_monday_sync/blob/main/monday_to_salesforce/utils/transformer.py)**
 
   - Helper functions reused across modules.
 
@@ -378,7 +379,7 @@ The business impact was substantial:
 
 - Avoided $7,000–$18,000/year in software licensing and integration costs.
 
-- 👩Enabled non-technical teams to manage BD operations without reliance on developers or Salesforce administrators.
+- Enabled non-technical teams to manage BD operations without reliance on developers or Salesforce administrators.
 
 - Ensured deal lifecycle traceability, with Salesforce retaining canonical records while Monday offered a fluid operational interface.
 
