@@ -4,41 +4,33 @@
 ---
 ## 📚 Table of Contents
 
-- [Overview](#overview)
-
-- [Tech Stack](#tech-stack)
-
-- [System Architecture](#system-architecture)
-
-- Part I: Real-time Sync (Monday → Salesforce)
-
-  - Flow
-  - Business Logic
-  - Error Handling & Logging
-
-- Part II: One-time Migration (Salesforce → Monday)
-
-  - Flow
-
-- Sample Payloads
-
-- Results & Impact
-
-  - 💰 Cost-saving Breakdown
-
-- Testing & Deployment
-
-- Project Structure
-
-- Demo
-
-- Future Improvements
-
-- About the Author
+- [Overview](#-overview)
+- [Tech Stack](#-tech-stack)
+- [System Architecture](#-system-architecture)
+- [Part I: Initial Migration (`salesforce_to_monday`)](#-part-i-initial-migration-salesforce_to_monday)
+  - [Batch Workflow](#batch-workflow)
+  - [Codebase Summary](#codebase-summary)
+  - [Sample Code (Updating Monday's column value)](#sample-code-updating-mondays-column-value)
+- [Part II: Real-Time Synchronization (`monday_to_salesforce`)](#-part-ii-real-time-synchronization-monday_to_salesforce)
+  - [Event Pipeline](#event-pipeline)
+  - [Domain Logic](#domain-logic)
+  - [Codebase Summary](#codebase-summary-1)
+  - [Observability](#observability)
+  - [Sample Code (Updating Salesforce's column value)](#sample-code-updating-salesforces-column-value)
+- [Payload Schemas](#-payload-schemas)
+  - [Monday → Salesforce](#monday--salesforce)
+  - [Salesforce → Monday.com](#salesforce--mondaycom)
+- [Outcome & Impact](#-outcome--impact)
+- [Project Structure](#-project-structure)
+- [Demo](#-demo)
+- [Future Improvements](#-future-improvements)
+- [Key Highlights](#-key-highlights)
+- [Future Improvements (Roadmap)](#-future-improvements-roadmap)
+- [Contact](#-contact)
 
 ---
 
-## 🧐 Overview
+## Overview
 
 Originally, Salesforce was the primary CRM system. However, as a small nonprofit, the organization faced challenges with Salesforce's complexity and cost. To empower non-technical team members and enable more visual, collaborative workflows—especially for Business Development—the operational layer was migrated to Monday.com. It provided a more intuitive UI, flexible board-based structure, and better support for managing BD pipelines across stages (e.g., Follow-up → Quote → MOU).
 
@@ -55,7 +47,7 @@ During this process, the project handled numerous field-level and structural mis
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 | Layer       | Tools                              |
 |------------|-------------------------------------|
 | Language    | Python 3.11                        |
@@ -67,12 +59,12 @@ During this process, the project handled numerous field-level and structural mis
 | Event Triggers | Monday.com Webhooks (multiple types; `update_column_value`, `create_pulse`, `update_name`, `delete_pulse`)
 
 ---
-## 🪡 System Architecture
+## System Architecture
 
 <img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/e1f42793-eae8-410a-8a12-881d800eb9c5" />
 
 ---
-## 🔄 Part I: Initial Migration (`salesforce_to_monday`)
+## Part I: Initial Migration (`salesforce_to_monday`)
 ### Batch Workflow
 1. GitHub Actions schedules a weekly run.
 
@@ -154,10 +146,10 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
         r = requests.post(MONDAY_API_URL, headers={"Authorization": monday_token}, json={"query": query, "variables": variables})
         response = r.json()
         if "errors" in response:
-            print(f"❌ Failed to create item: {item_name}")
+            print(f"Failed to create item: {item_name}")
             print(response["errors"])
         else:
-            print(f"✅ Created: {item_name}", flush=True)
+            print(f"Created: {item_name}", flush=True)
         return
 
     # Step 3: Update
@@ -190,22 +182,22 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
         r = requests.post(MONDAY_API_URL, headers={"Authorization": monday_token}, json={"query": query, "variables": variables})
         response = r.json()
         if "errors" in response or "data" not in response:
-            print(f"❌ Update error for {item_name}")
+            print(f"Update error for {item_name}")
             print(json.dumps(response.get("errors", {}), indent=2))
             
         else:
             updated_fields = ', '.join(updated.keys())
-            print(f"🔁 Updated: {item_name}", flush=True)
+            print(f"Updated: {item_name}", flush=True)
             for line in change_log:
                 print(line, flush=True)
                 
     else:
-        print(f"⏩ Skipped (no change): {item_name}", flush=True)
+        print(f"Skipped (no change): {item_name}", flush=True)
 ```
 
 ---  
 
-## 📦 Part II: Real-Time Synchronization (`monday_to_salesforce`)
+## Part II: Real-Time Synchronization (`monday_to_salesforce`)
 ### Event Pipeline
 1. Monday webhook fires on item update, rename, creation, or deletion.
 
@@ -293,8 +285,8 @@ async def handle_update_column(event, entity_type):
         log_to_db("update_column_value", board_id, item_id, column_id, "skipped",
                   response_data={"msg": "No Salesforce ID"})
         
-        print(f"⏩ Skipped: No Salesforce ID for item {item_id} on board {board_id}")
-        return {"status": "⏩ Skipped: No Salesforce ID"}
+        print(f"Skipped: No Salesforce ID for item {item_id} on board {board_id}")
+        return {"status": "Skipped: No Salesforce ID"}
 
     # Check column mapping
     if column_id in config["field_mapping"]:
@@ -311,21 +303,21 @@ async def handle_update_column(event, entity_type):
         log_to_db("update_column_value", board_id, item_id, column_id,
                     "success" if success else "failed",
                     response_data={"sf_id": sf_id, "field": sf_field, "value": value})
-        print(f"✅ Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}")
+        print(f"Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}")
         return {"status": f"Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}"}
     
     log_to_db("update_column_value", board_id, item_id, column_id, "skipped",
               response_data={"msg": f"No mapping for column {column_id}"})
     
-    print(f"⏩ Skipped: No mapping for column {column_id} in {entity_type}")
-    return {"status": "⏩ Skipped: No mapping for this column"}
+    print(f"Skipped: No mapping for column {column_id} in {entity_type}")
+    return {"status": "Skipped: No mapping for this column"}
 
 ```
 
 ---
 
 
-## 🤖 Payload Schemas
+## Payload Schemas
 ### Monday → Salesforce
 ```json
 {
@@ -370,7 +362,7 @@ async def handle_update_column(event, entity_type):
 }
 ```
 ---
-### 🧠 Outcome & Impact
+### Outcome & Impact
 
 The CRM migration from Salesforce to Monday.com catalyzed a strategic transformation in business development (BD) operations. By shifting to Monday.com’s lightweight, intuitive UI, frontline staff with limited technical expertise could now manage BD workflows more autonomously and collaboratively. This transition significantly lowered the operational barrier imposed by Salesforce’s complex interface.
 
@@ -380,24 +372,24 @@ Notably, even a Monday.com Enterprise plan does not natively support full bidire
 
 The business impact was substantial:
 
-- 🔁 Replaced fragmented, error-prone manual data entry across systems with automated synchronization.
+- Replaced fragmented, error-prone manual data entry across systems with automated synchronization.
 
-- ⌛ Saved 4–6 hours of weekly manual syncing labor, reducing operational and cognitive burden by over 90%.
+- Saved 4–6 hours of weekly manual syncing labor, reducing operational and cognitive burden by over 90%.
 
-- 💰 Avoided $7,000–$18,000/year in software licensing and integration costs.
+- Avoided $7,000–$18,000/year in software licensing and integration costs.
 
-- 👩‍💼 Enabled non-technical teams to manage BD operations without reliance on developers or Salesforce administrators.
+- 👩Enabled non-technical teams to manage BD operations without reliance on developers or Salesforce administrators.
 
-- 🔍 Ensured deal lifecycle traceability, with Salesforce retaining canonical records while Monday offered a fluid operational interface.
+- Ensured deal lifecycle traceability, with Salesforce retaining canonical records while Monday offered a fluid operational interface.
 
-- 🧾 Implemented production-grade observability (logging, error alerts) for robust auditability and debugging.
+- Implemented production-grade observability (logging, error alerts) for robust auditability and debugging.
 
-- 🧩 Achieved a scalable, budget-conscious CRM automation model, aligned with the lean and resource-constrained nature of nonprofit environments.
+- Achieved a scalable, budget-conscious CRM automation model, aligned with the lean and resource-constrained nature of nonprofit environments.
 
 - By building this from the ground up using Python, AWS Lambda, GraphQL, and PostgreSQL, the system delivered not only cost efficiency but also long-term maintainability and strategic autonomy. For nonprofits, where every dollar and hour saved directly impacts mission delivery, this integration offered both tactical relief and operational transformation.
 
 ---
-## 🧭 Project Structure
+## Project Structure
 ```python
 # For brevity, only the core components essential to the synchronization logic are listed below.
 
@@ -435,12 +427,12 @@ salesforce_monday_sync/
 └── README.md
 ```
 ---
-## 📹 Demo
-▶️ [Watch the 3-min demo](https://www.youtube.com/watch?v=xHnaaww_K10)
+## Demo
+[Watch the 7-min demo](https://www.youtube.com/watch?v=xHnaaww_K10)
 → Demonstrates the real-time synchronization.
 
 ---
-## 📌 Future Improvements
+## Future Improvements
 - Implement bidirectional sync logic (conflict resolution)
 - Add Slack integration for success alerts
 - Support custom field mapping via config file
@@ -448,21 +440,21 @@ salesforce_monday_sync/
 
 ---
 
-## 🔍 Key Highlights
-- ✔ **Reduced sync latency** from `60s → <10s`  
-- ✔ **Automated data consistency** for `1,000+ CRM records`  
-- ✔ Enabled **non-technical teams** to leverage CRM automation with zero manual intervention  
+## Key Highlights
+- **Reduced sync latency** from `60s → <10s`  
+- **Automated data consistency** for `1,000+ CRM records`  
+- Enabled **non-technical teams** to leverage CRM automation with zero manual intervention  
 
 ---
 
-## 📈 Future Improvements
+## Future Improvements
 - [ ] Add **OAuth 2.0 token refresh** for enhanced security  
 - [ ] Expand to support **custom Salesforce objects**  
 - [ ] Integrate with **AWS Step Functions** for advanced orchestration  
 
 ---
 
-## 📬 Contact
-**Author:** Taesung Ha  
-📧 **Email:** [taesungh@umich.edu](mailto:taesungh@umich.edu)  
-🌐 **LinkedIn:** [[https://linkedin.com/in/taesungha](https://www.linkedin.com/in/tae-sung-ha-696a5b246/)](https://www.linkedin.com/in/tae-sung-ha-696a5b246/) 
+## Contact
+**Author:** Tae Sung Ha  
+**Email:** [taesungh@umich.edu](mailto:taesungh@umich.edu)  
+**LinkedIn:** [[https://linkedin.com/in/taesungha](https://www.linkedin.com/in/tae-sung-ha-696a5b246/)](https://www.linkedin.com/in/tae-sung-ha-696a5b246/) 
