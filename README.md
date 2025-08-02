@@ -436,8 +436,8 @@ salesforce_monday_sync/
 ```
 ---
 ## 📹 Demo
-▶️ Watch the 3-min demo <br>
-→ Demonstrates real-time sync, database logging, and error alerts in action.
+▶️ [Watch the 3-min demo](https://www.youtube.com/watch?v=xHnaaww_K10)
+→ Demonstrates the real-time synchronization.
 
 ---
 ## 📌 Future Improvements
