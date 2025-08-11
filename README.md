@@ -64,7 +64,7 @@ During this process, the project handled numerous field-level and structural mis
 <img width="1821" height="1778" alt="Image" src="https://github.com/user-attachments/assets/e1f42793-eae8-410a-8a12-881d800eb9c5" />
 
 ---
-## Part I: Initial Migration (`salesforce_to_monday`)
+## Part I: Initial Migration [(`salesforce_to_monday`)](https://github.com/taesung-ha/salesforce_monday_sync/tree/main/salesforce_to_monday)
 ### Batch Workflow
 1. GitHub Actions schedules a weekly run.
 
@@ -197,7 +197,7 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
 
 ---  
 
-## Part II: Real-Time Synchronization (`monday_to_salesforce`)
+## Part II: Real-Time Synchronization [(`monday_to_salesforce`)](https://github.com/taesung-ha/salesforce_monday_sync/tree/main/monday_to_salesforce)
 ### Event Pipeline
 1. Monday webhook fires on item update, rename, creation, or deletion.
 
