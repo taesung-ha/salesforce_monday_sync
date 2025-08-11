@@ -394,37 +394,39 @@ The business impact was substantial:
 # For brevity, only the core components essential to the synchronization logic are listed below.
 
 salesforce_monday_sync/
-├── monday_to_salesforce/
-│   ├── Dependencies
-│   ├── config
-│   │    └── config.py
-│   │    └── entity_config.py
-│   ├── handlers
-│   │    └── entity_handler.py
+├── monday_to_salesforce/                # [Real-time Sync] Lambda code for Monday.com → Salesforce
+│   ├── Dependencies                      # External library dependencies for Lambda packaging
+│   ├── config/
+│   │    ├── config.py                    # Global environment variables, API tokens, DB connection settings
+│   │    └── entity_config.py              # Per-entity (Lead, Account, etc.) field and column mapping rules
+│   ├── handlers/
+│   │    └── entity_handler.py             # Main Lambda handler logic for each Monday.com webhook event type
 │   ├── services/
-│   │    └── log_service.py
-│   │    └── mapping_service.py
-│   │    └── monday_service.py
-│   │    └── salesforce_service.py
-│   ├── dat_migration.py
-│   ├── main.py
-│   └── requirements.txt
-├── salesforce_to_monday/
-│   ├── mapping_config
-│   │   └── account.json
-│   │   └── contact.json
-│   │   └── lead.json
-│   │   └── opportunity.json
-│   ├── config.py
-│   ├── main.py
-│   ├── monday.py
-│   ├── monday_board_connecting.py
-│   ├── salesforce.py
-│   ├── sync.py
-│   ├── sync_account.py
-│   ├── sync_utils.py
-│   └── requirements.txt
-└── README.md
+│   │    ├── log_service.py                # Writes webhook logs to PostgreSQL and sends error alerts
+│   │    ├── mapping_service.py            # Maintains mapping between Monday item IDs and Salesforce record IDs
+│   │    ├── monday_service.py             # Monday.com GraphQL/REST API wrapper functions
+│   │    └── salesforce_service.py         # Salesforce REST API wrapper for CRUD operations
+│   ├── dat_migration.py                   # Optional migration script for Monday → Salesforce data
+│   ├── main.py                            # Lambda entry point; routes API Gateway events to appropriate handler
+│   └── requirements.txt                   # Python package dependencies for the Lambda function
+│
+├── salesforce_to_monday/                 # [One-time Migration] Batch job for Salesforce → Monday.com
+│   ├── mapping_config/                    # JSON mapping definitions for Salesforce objects → Monday boards
+│   │   ├── account.json                    # Field mapping for Account objects
+│   │   ├── contact.json                    # Field mapping for Contact objects
+│   │   ├── lead.json                       # Field mapping for Lead objects
+│   │   └── opportunity.json                # Field mapping for Opportunity objects
+│   ├── config.py                           # Environment variables and API token configuration
+│   ├── main.py                             # Entry point for batch migration execution
+│   ├── monday.py                           # Monday.com GraphQL API integration and update logic
+│   ├── monday_board_connecting.py          # Rebuilds relational links between Monday boards to mirror Salesforce
+│   ├── salesforce.py                       # Salesforce REST API integration for data retrieval
+│   ├── sync.py                             # Core sync logic between Salesforce data and Monday boards
+│   ├── sync_account.py                     # Specialized sync logic for Account entities
+│   ├── sync_utils.py                       # Utility functions shared across sync modules
+│   └── requirements.txt                    # Python dependencies for batch migration scripts
+│
+└── README.md                              # Project documentation and usage instructions
 ```
 ---
 ## Demo
