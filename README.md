@@ -1,6 +1,10 @@
 # CRM Data Integration: Monday → Salesforce (Real-time Sync) + Salesforce → Monday (One-time Migration)
 > A two-part end-to-end CRM synchronization project using Python, PostgreSQL, Docker, AWS Lambda, RDS, GitHub Actions, and both REST & GraphQL APIs. Built to automate real-time updates from Monday.com to Salesforce and perform one-time data migration from Salesforce to Monday.com.
 
+⚠️ Note: This project integrates with live Salesforce and Monday.com APIs. 
+Due to account and credential requirements, it cannot be run locally without access. 
+[A recorded demo](https://www.youtube.com/watch?v=xHnaaww_K10) is provided for review purposes.
+
 ---
 ## Table of Contents
 
