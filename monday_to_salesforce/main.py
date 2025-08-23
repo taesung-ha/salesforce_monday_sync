@@ -76,4 +76,3 @@ async def monday_webhook(req: Request):
         print(f"❌ Error in webhook: {str(e)}")
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"error": str(e)})
-#test
