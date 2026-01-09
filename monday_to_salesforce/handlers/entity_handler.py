@@ -35,8 +35,8 @@ async def handle_update_column(event, entity_type):
         log_to_db("update_column_value", board_id, item_id, column_id, "skipped",
                   response_data={"msg": "No Salesforce ID"})
         
-        print(f"⏩ Skipped: No Salesforce ID for item {item_id} on board {board_id}")
-        return {"status": "⏩ Skipped: No Salesforce ID"}
+        print(f"Skipped: No Salesforce ID for item {item_id} on board {board_id}")
+        return {"status": "Skipped: No Salesforce ID"}
 
     # Check column mapping
     if column_id in config["field_mapping"]:
@@ -53,14 +53,14 @@ async def handle_update_column(event, entity_type):
         log_to_db("update_column_value", board_id, item_id, column_id,
                     "success" if success else "failed",
                     response_data={"sf_id": sf_id, "field": sf_field, "value": value})
-        print(f"✅ Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}")
+        print(f"Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}")
         return {"status": f"Updated {sf_field} for {entity_type} {sf_id}, Updated value: {value}"}
     
     log_to_db("update_column_value", board_id, item_id, column_id, "skipped",
               response_data={"msg": f"No mapping for column {column_id}"})
     
-    print(f"⏩ Skipped: No mapping for column {column_id} in {entity_type}")
-    return {"status": "⏩ Skipped: No mapping for this column"}
+    print(f"Skipped: No mapping for column {column_id} in {entity_type}")
+    return {"status": "Skipped: No mapping for this column"}
 
 
 async def handle_create_pulse(event, entity_type):
@@ -107,13 +107,13 @@ async def handle_create_pulse(event, entity_type):
         update_monday_column(item_id, board_id, config["sf_id_column"], sf_id)
         log_to_db("create_pulse", board_id, item_id, "", "success", response_data={"sf_id": sf_id})
         save_mapping(item_id, board_id, sf_id, entity_type)
-        print(f"✅ {entity_type} created: {sf_id}")
-        return {"messages": f"✅ {entity_type} created: {sf_id}"}
+        print(f"{entity_type} created: {sf_id}")
+        return {"messages": f"{entity_type} created: {sf_id}"}
 
-    send_telegram_alert(f"❌ Failed to create {entity_type} for item {item_id}")
+    send_telegram_alert(f"Failed to create {entity_type} for item {item_id}")
     log_to_db("create_pulse", board_id, item_id, "", "failed")
-    print(f"❌ Failed to create {entity_type} for item {item_id}")
-    return {"status": f"❌ Failed to create {entity_type}"}
+    print(f"Failed to create {entity_type} for item {item_id}")
+    return {"status": f"Failed to create {entity_type}"}
 
 
 async def handle_update_name(event, entity_type):
@@ -141,17 +141,17 @@ async def handle_update_name(event, entity_type):
                 response_data={"sf_id": sf_id, "Name": new_name})
         
         if success:
-            print(f"✅ Updated Name for {entity_type} {sf_id}")
-            return {"status": f"✅ Updated Name for {entity_type} {sf_id}"}
+            print(f"Updated Name for {entity_type} {sf_id}")
+            return {"status": f"Updated Name for {entity_type} {sf_id}"}
         
         else:
-            send_telegram_alert(f"❌ Failed to update Name for {entity_type} {sf_id}")
-            print(f"❌ Failed to update Name for {entity_type} {sf_id}")
-            return {"status": f"❌ Failed to update Name for {entity_type}"}
+            send_telegram_alert(f"Failed to update Name for {entity_type} {sf_id}")
+            print(f"Failed to update Name for {entity_type} {sf_id}")
+            return {"status": f"Failed to update Name for {entity_type}"}
 
     log_to_db("update_name", board_id, item_id, "", "skipped", response_data={"msg": "No Salesforce ID"})
-    print(f"⏩ Skipped: No Salesforce ID for item {item_id} on board {board_id}")
-    return {"status": "⏩ Skipped: No Salesforce ID"}
+    print(f"Skipped: No Salesforce ID for item {item_id} on board {board_id}")
+    return {"status": "Skipped: No Salesforce ID"}
     
 async def handle_board_connection(event, entity_type):
     config = ENTITY_CONFIG[entity_type]
@@ -165,18 +165,18 @@ async def handle_board_connection(event, entity_type):
     source_sf_id = column_values.get(config["sf_id_column"], {}).get("value", "")
 
     if not source_sf_id:
-        print(f"⏩ Skipped: No Salesforce ID for {source_item_id}")
-        return {"status": "⏩ Skipped"}
+        print(f"Skipped: No Salesforce ID for {source_item_id}")
+        return {"status": "Skipped"}
 
     # Check added/removed IDs
     added_ids, removed_ids = get_added_and_removed_ids(event)
-    print(f"🔍 Added: {added_ids}, Removed: {removed_ids}")
+    print(f"Added: {added_ids}, Removed: {removed_ids}")
 
     # Check mapping
     link_mapping = config.get("link_mappings", {}).get(column_id)
     if not link_mapping:
-        print(f"⏩ Skipped: No link mapping for {column_id}")
-        return {"status": "⏩ Skipped: No link mapping"}
+        print(f"Skipped: No link mapping for {column_id}")
+        return {"status": "Skipped: No link mapping"}
 
     target_entity, sf_field = link_mapping
     target_config = ENTITY_CONFIG[target_entity]
@@ -190,7 +190,7 @@ async def handle_board_connection(event, entity_type):
             await asyncio.sleep(delay * (2 ** attempt))
         return None
 
-    # ✅ Process added links
+    # Process added links
     for target_item_id in added_ids:
         target_sf_id = await wait_for_sf_id(target_item_id, target_config['board_id'], target_config["sf_id_column"])
         if target_sf_id:
@@ -198,24 +198,24 @@ async def handle_board_connection(event, entity_type):
             log_to_db('update_relation_add', board_id, source_item_id, column_id, "success" if success else "failed",
                       response_data={"source_sf_id": source_sf_id, "added_target_sf_id": target_sf_id, "field": sf_field})
             if not success:
-                send_telegram_alert(f"❌ Failed to link {target_entity} {target_sf_id} to {entity_type} {source_sf_id}")
-            print(f"{'✅' if success else '❌'} Linked {target_entity} {target_sf_id} to {entity_type} {source_sf_id}")
+                send_telegram_alert(f"Failed to link {target_entity} {target_sf_id} to {entity_type} {source_sf_id}")
+            print(f"{'success' if success else 'failed'} Linked {target_entity} {target_sf_id} to {entity_type} {source_sf_id}")
         else:
-            print("⚠️ No Salesforce ID for target item:", target_item_id)
+            print("No Salesforce ID for target item:", target_item_id)
             log_to_db('update_relation_add', board_id, source_item_id, column_id, "skipped",
                       response_data={"msg": f"No Salesforce ID for target {target_item_id}"})
 
-    # ✅ Process removed links
+    # Process removed links
     for target_item_id in removed_ids:
         target_sf_id = await wait_for_sf_id(target_item_id, target_config['board_id'], target_config["sf_id_column"])
         success = update_salesforce_record(config['object_name'], source_sf_id, {sf_field: None})
         log_to_db('update_relation_remove', board_id, source_item_id, column_id, "success" if success else "failed",
                   response_data={"source_sf_id": source_sf_id, "removed_target_sf_id": target_sf_id, "field": sf_field})
         if not success:
-            send_telegram_alert(f"❌ Failed to unlink {target_entity} from {entity_type} {source_sf_id}")
-        print(f"{'❌' if not success else '✅'} Unlinked {target_entity} {target_sf_id} from {entity_type} {source_sf_id}")
+            send_telegram_alert(f"Failed to unlink {target_entity} from {entity_type} {source_sf_id}")
+        print(f"{'failed' if not success else 'success'} Unlinked {target_entity} {target_sf_id} from {entity_type} {source_sf_id}")
 
-    return {"status": f"✅ Added: {len(added_ids)}, Removed: {len(removed_ids)}"}
+    return {"status": f"Added: {len(added_ids)}, Removed: {len(removed_ids)}"}
 
 async def handle_item_deleted(event, entity_type):
     board_id = event.get("boardId")
@@ -225,18 +225,18 @@ async def handle_item_deleted(event, entity_type):
     
     if not sf_id:
         log_to_db("delete_pulse", board_id, item_id, "", "skipped", {"msg": "No Salesforce ID in cache"})
-        print(f"⏩ Skipped: No Salesforce ID for item {item_id}")
-        return {"status": "⏩ Skipped: No Salesforce ID in cache"}
+        print(f"Skipped: No Salesforce ID for item {item_id}")
+        return {"status": "Skipped: No Salesforce ID in cache"}
 
     success = delete_salesforce_record(ENTITY_CONFIG[entity_type]["object_name"], sf_id)
     
     if success:
         delete_mapping(item_id, board_id)
         log_to_db("delete_pulse", board_id, item_id, "", "success", {"sf_id": sf_id})
-        print(f"✅ Deleted {entity_type} {sf_id} from Salesforce")
-        return {"status": f"✅ Deleted {entity_type} {sf_id}"}
+        print(f"Deleted {entity_type} {sf_id} from Salesforce")
+        return {"status": f"Deleted {entity_type} {sf_id}"}
     else:
-        send_telegram_alert(f"❌ Failed to delete {entity_type} {sf_id} from Salesforce")
+        send_telegram_alert(f"Failed to delete {entity_type} {sf_id} from Salesforce")
         log_to_db("delete_pulse", board_id, item_id, "", "failed", {"sf_id": sf_id})
-        print(f"❌ Failed to delete {entity_type} {sf_id} from Salesforce")
-        return {"status": f"❌ Failed to delete {entity_type} {sf_id}"}
+        print(f"Failed to delete {entity_type} {sf_id} from Salesforce")
+        return {"status": f"Failed to delete {entity_type} {sf_id}"}
