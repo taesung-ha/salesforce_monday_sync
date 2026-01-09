@@ -48,10 +48,10 @@ def fetch_salesforce_records(instance_url, access_token, object_name, select_fie
     if response.status_code != 200:
         try:
             error_json = response.json()
-            print("🔴 Salesforce API Error Details:")
+            print("Salesforce API Error Details:")
             print(json.dumps(error_json, indent=2))
         except Exception:
-            print("🔴 Raw error response:")
+            print("Raw error response:")
             print(response.text)
         raise Exception(f"[{response.status_code}] Failed initial fetch.")
 
