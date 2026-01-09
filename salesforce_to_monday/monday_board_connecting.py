@@ -54,17 +54,17 @@ def fetch_items_with_column(board_id, value_col_id, extra_col_id=None):
         if cursor is None:
             break
 
-    print(f"📊 Out of {total_count} items, {empty_count} items are missing the '{value_col_id}' value.")
+    print(f"Out of {total_count} items, {empty_count} items are missing the '{value_col_id}' value.")
     return items
 # %%
 def connect_items(source_board_id, target_board_id, source_key_col_id, target_key_col_id, connect_col_id):
     import requests
-    print(f"📥 Target board({target_board_id}) data fetching...")
+    print(f"Target board({target_board_id}) data fetching...")
     target_map_raw = fetch_items_with_column(target_board_id, target_key_col_id)
     # transfoming to {key: [item_id]}
     target_map = {k: [int(v["item_id"])] for k, v in target_map_raw.items()}
 
-    print(f"📥 Source board({source_board_id}) data fetching...")
+    print(f"Source board({source_board_id}) data fetching...")
     source_map = fetch_items_with_column(source_board_id, source_key_col_id, extra_col_id=connect_col_id)
 
     print(f"🔗 {len(source_map)} items connection attempts...")
@@ -73,7 +73,7 @@ def connect_items(source_board_id, target_board_id, source_key_col_id, target_ke
         source_item_id = int(source_data["item_id"])
 
         if not target_item_ids:
-            print(f"⚠️ Matching Failed: '{key}' (Source item {source_item_id})")
+            print(f"Matching Failed: '{key}' (Source item {source_item_id})")
             continue
 
         # Check if there are currently connected items
@@ -83,10 +83,10 @@ def connect_items(source_board_id, target_board_id, source_key_col_id, target_ke
                 parsed = json.loads(source_data["connected_ids"])
                 existing_connected = [int(x) for x in parsed.get("item_ids", [])]
             except Exception as e:
-                print(f"⚠️ Connection info parsing failed: {e}")
+                print(f"Connection info parsing failed: {e}")
 
         if all(tid in existing_connected for tid in target_item_ids):
-            print(f"⏩ Already Connected: Source {source_item_id} → Target {target_item_ids}")
+            print(f"Already Connected: Source {source_item_id} → Target {target_item_ids}")
             continue
 
         value_json = json.dumps({"item_ids": target_item_ids})
@@ -111,9 +111,9 @@ def connect_items(source_board_id, target_board_id, source_key_col_id, target_ke
 
         res = requests.post(API_URL, headers=HEADERS, json={"query": mutation, "variables": variables})
         if "errors" in res.json():
-            print(f"❌ Connection failed: Source {source_item_id} → Target {target_item_ids}", flush=True)
+            print(f"Connection failed: Source {source_item_id} → Target {target_item_ids}", flush=True)
             print(res.text)
         else:
-            print(f"✅ Connection established: Source {source_item_id} → Target {target_item_ids}", flush=True)
+            print(f"Connection established: Source {source_item_id} → Target {target_item_ids}", flush=True)
 
-    print("🎉 Connection process completed.", flush=True)
+    print("Connection process completed.", flush=True)
