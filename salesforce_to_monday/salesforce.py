@@ -36,7 +36,7 @@ def fetch_salesforce_records(instance_url, access_token, object_name, select_fie
     if where_clauses:
         query += " WHERE " + " AND ".join(where_clauses)
 
-    print(f"🔍 Salesforce Query: {query}")
+    print(f"Salesforce Query: {query}")
 
     params = {"q": query}
     records = []
