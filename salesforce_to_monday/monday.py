@@ -47,7 +47,7 @@ def get_monday_items(monday_board_id, monday_token, salesforce_id_column_id):
 
         result = response.json()
         if "errors" in result:
-            print("❌ GraphQL error:", json.dumps(result["errors"], indent=2), flush=True)
+            print("GraphQL error:", json.dumps(result["errors"], indent=2), flush=True)
             break
 
         items_data = result['data']['boards'][0]['items_page']
@@ -220,10 +220,10 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
         r = requests.post(MONDAY_API_URL, headers={"Authorization": monday_token}, json={"query": query, "variables": variables})
         response = r.json()
         if "errors" in response:
-            print(f"❌ Failed to create item: {item_name}")
+            print(f"Failed to create item: {item_name}")
             print(response["errors"])
         else:
-            print(f"✅ Created: {item_name}", flush=True)
+            print(f"Created: {item_name}", flush=True)
         return
 
     # Step 3: Update
@@ -256,14 +256,14 @@ def create_or_update_monday_item(record, monday_items, monday_board_id, monday_t
         r = requests.post(MONDAY_API_URL, headers={"Authorization": monday_token}, json={"query": query, "variables": variables})
         response = r.json()
         if "errors" in response or "data" not in response:
-            print(f"❌ Update error for {item_name}")
+            print(f"Update error for {item_name}")
             print(json.dumps(response.get("errors", {}), indent=2))
             
         else:
             updated_fields = ', '.join(updated.keys())
-            print(f"🔁 Updated: {item_name}", flush=True)
+            print(f"Updated: {item_name}", flush=True)
             for line in change_log:
                 print(line, flush=True)
                 
     else:
-        print(f"⏩ Skipped (no change): {item_name}", flush=True)
+        print(f"Skipped (no change): {item_name}", flush=True)
