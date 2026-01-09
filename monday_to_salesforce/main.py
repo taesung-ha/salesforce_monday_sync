@@ -8,7 +8,7 @@ from services.log_service import create_log_table
 from config.entity_config import ENTITY_CONFIG
 import traceback
 
-print("✅ Lambda started execution")
+print("Lambda started execution")
 
 app = FastAPI()
 
@@ -17,7 +17,7 @@ async def startup_event():
     print("Connecting to DB")
     create_mapping_table()
     create_log_table()
-    print("✅ Mapping and log tables checked/created.")
+    print("Mapping and log tables checked/created.")
 
 @app.get("/")
 def root():
@@ -33,7 +33,7 @@ def health_check():
 async def monday_webhook(req: Request):
     try:
         data = await req.json()
-        print("📥 Received from Monday:", data)
+        print("Received from Monday:", data)
 
         # Webhook check (challenge processing)
         if "challenge" in data:
@@ -52,7 +52,7 @@ async def monday_webhook(req: Request):
                 break
 
         if not entity_type:
-            print(f"⚠️ Unknown board: {board_id}")
+            print(f"Unknown board: {board_id}")
             return {"status": "Skipped: Unknown board"}
 
         # Call handler for each event type
@@ -67,12 +67,12 @@ async def monday_webhook(req: Request):
         elif event_type == 'delete_pulse':
             return await handle_item_deleted(event, entity_type)
         else:
-            print(f"ℹ️ Event type {event_type} not handled.")
+            print(f"Event type {event_type} not handled.")
             result = {"status": f"Unhandled event type: {event_type}"}
         
         return result
 
     except Exception as e:
-        print(f"❌ Error in webhook: {str(e)}")
+        print(f"Error in webhook: {str(e)}")
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"error": str(e)})
