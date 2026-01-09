@@ -3,8 +3,8 @@ name: Salesforce to Monday Sync
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 매일 자정 (UTC 기준)
-  workflow_dispatch:      # 수동 실행 가능
+    - cron: '0 0 * * *'  
+  workflow_dispatch:      
 
 jobs:
   sync:
@@ -28,7 +28,7 @@ jobs:
         run: |
           for var in SF_CLIENT_ID SF_CLIENT_SECRET SF_USERNAME SF_PASSWORD MONDAY_TOKEN; do
             if [ -z "${!var}" ]; then
-              echo "❌ Missing required secret: $var"
+              echo "Missing required secret: $var"
               exit 1
             fi
           done
